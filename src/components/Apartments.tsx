@@ -198,5 +198,4 @@ export function Apartments() {
       </div>
     </section>
   );
-};
 }

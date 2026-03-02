@@ -19,13 +19,13 @@ export function ApartmentCard({
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // ✅ UPDATED IMAGES (Dream / Heaven / Oasis)
+  // ✅ UPDATED FINAL IMAGES
   const images: Record<string, string> = useMemo(
     () => ({
       Dream:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771582099/PatioSudtavolopiscina_w7ggau.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771582089/b9dd12b5-38cb-4e6c-845d-194d27f96e13.png_2023-09-08_08_42_18_myofms.jpg',
       Heaven:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822055_vezdpa.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581999/701822049_mqvxn3.jpg',
       Oasis:
         'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822084_wurbyn.jpg'
     }),

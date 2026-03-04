@@ -1,57 +1,144 @@
-import React from 'react'
+```tsx
+import React, { useMemo, useState } from 'react'
 import { DecorativeBorder } from './DecorativeElements'
 import { MapPin, Compass, Sun } from 'lucide-react'
 
-export function Location() {
-  const places = [
-    {
-      name: 'Monopoli',
-      minutes: '10 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg'
-    },
-    {
-      name: 'Capitolo',
-      minutes: '5 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg'
-    },
-    {
-      name: 'Alberobello',
-      minutes: '20 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp'
-    },
-    {
-      name: 'Castellana Grotte',
-      minutes: '20 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif'
-    },
-    {
-      name: 'Polignano a Mare',
-      minutes: '15 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg'
-    },
-    {
-      name: 'Cisternino',
-      minutes: '18 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg'
-    },
-    {
-      name: 'Savelletri',
-      minutes: '8 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg'
-    },
-    {
-      name: 'Ostuni',
-      minutes: '25 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg'
-    },
-    {
-      name: 'Bari',
-      minutes: '35 min',
-      img: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg'
-    }
-  ] as const
+type LocationItem = {
+  id: number
+  name: string
+  label: string // es: "Monopoli 10 min"
+  photos: string[]
+}
 
-  const rotations = ['-2deg', '1.5deg', '-1deg', '2deg', '-1.5deg', '1deg', '-2.5deg', '1.8deg', '-1.2deg'] as const
+// ottimizzazione automatica Cloudinary (stesso metodo Gallery)
+function optimize(url: string, width: number) {
+  if (!url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url
+  const afterUpload = url.split('/image/upload/')[1] || ''
+  const firstSeg = afterUpload.split('/')[0] || ''
+  const looksLikeTransform =
+    firstSeg.includes('_') ||
+    firstSeg.startsWith('c_') ||
+    firstSeg.startsWith('e_') ||
+    firstSeg.startsWith('f_') ||
+    firstSeg.startsWith('q_') ||
+    firstSeg.startsWith('w_')
+  if (looksLikeTransform) return url
+  return url.replace('/image/upload/', `/image/upload/f_auto,q_auto,w_${width}/`)
+}
+
+function LocationCard({ item, idx }: { item: LocationItem; idx: number }) {
+  const [photoIdx, setPhotoIdx] = useState(0)
+
+  const currentPhoto = useMemo(() => {
+    const safeIdx = (photoIdx % item.photos.length + item.photos.length) % item.photos.length
+    return item.photos[safeIdx]
+  }, [photoIdx, item.photos])
+
+  const hasMultiple = item.photos.length > 1
+
+  const onClick = () => {
+    if (!hasMultiple) return
+    setPhotoIdx((i) => (i + 1) % item.photos.length)
+  }
+
+  return (
+    <div
+      className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${
+        idx % 2 === 0 ? 'rotate-1' : '-rotate-1'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onClick}
+        className="aspect-square bg-[var(--paper)] overflow-hidden relative w-full text-left group"
+        aria-label={hasMultiple ? `Apri altre foto: ${item.name}` : `Foto: ${item.name}`}
+      >
+        <img
+          src={optimize(currentPhoto, 1400)}
+          alt={item.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+
+        {/* effetto vintage leggero */}
+        <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
+
+        {/* freccia in basso a destra (solo se più foto) */}
+        {hasMultiple && (
+          <div className="absolute bottom-4 right-4 pointer-events-none">
+            <div className="h-12 w-12 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
+              <span className="text-2xl leading-none text-[var(--brown)]">›</span>
+            </div>
+          </div>
+        )}
+      </button>
+
+      <div className="absolute bottom-4 left-0 w-full text-center pointer-events-none">
+        <span className="font-script text-xl text-[var(--brown)] opacity-60 italic">
+          {item.label}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export function Location() {
+  const items: LocationItem[] = [
+    {
+      id: 1,
+      name: 'Monopoli',
+      label: 'Monopoli 10 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg']
+    },
+    {
+      id: 2,
+      name: 'Capitolo',
+      label: 'Capitolo 5 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg']
+    },
+    {
+      id: 3,
+      name: 'Alberobello',
+      label: 'Alberobello 20 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp']
+    },
+    {
+      id: 4,
+      name: 'Castellana Grotte',
+      label: 'Castellana Grotte 20 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif']
+    },
+    {
+      id: 5,
+      name: 'Polignano a Mare',
+      label: 'Polignano 15 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg']
+    },
+    {
+      id: 6,
+      name: 'Cisternino',
+      label: 'Cisternino 18 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg']
+    },
+    {
+      id: 7,
+      name: 'Savelletri',
+      label: 'Savelletri 8 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg']
+    },
+    {
+      id: 8,
+      name: 'Ostuni',
+      label: 'Ostuni 25 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg']
+    },
+    {
+      id: 9,
+      name: 'Bari',
+      label: 'Bari 35 min',
+      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg']
+    }
+  ]
 
   return (
     <section className="py-20 px-4 bg-paper-texture overflow-hidden">
@@ -63,7 +150,7 @@ export function Location() {
         </div>
 
         <div className="relative bg-[#FDFBF7] p-8 md:p-12 border border-[#E8E1D5] shadow-lg max-w-4xl mx-auto transform rotate-1">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Testo sinistra */}
             <div className="space-y-6">
               <div className="flex items-start gap-4">
@@ -82,9 +169,11 @@ export function Location() {
                 <div>
                   <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Nei Dintorni</h3>
                   <ul className="space-y-2 text-[var(--brown)] opacity-80">
+                    <li>• Capitolo (5 min)</li>
                     <li>• Polignano a Mare (15 min)</li>
                     <li>• Alberobello (20 min)</li>
                     <li>• Ostuni (25 min)</li>
+                    <li>• Bari (35 min)</li>
                   </ul>
                 </div>
               </div>
@@ -101,40 +190,10 @@ export function Location() {
               </div>
             </div>
 
-            {/* Immagine Monopoli (aggiornata) */}
-            <div className="relative aspect-square rounded-sm overflow-hidden border-2 border-[var(--cream)] shadow-md">
-              <img
-                src="https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg"
-                alt="Monopoli"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-
-              {/* Etichetta cartolina */}
-              <div className="absolute bottom-4 right-4 bg-[var(--paper)] px-4 py-2 shadow-sm rotate-2">
-                <span className="font-script text-xl text-[var(--brown)] italic">Monopoli 10 min</span>
-              </div>
-            </div>
-          </div>
-
-          {/* GALLERY LUOGHI (ruotata come in gallery) */}
-          <div className="mt-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {places.map((p, idx) => (
-                <div
-                  key={p.name}
-                  className="relative bg-[#FDFBF7] border border-[#E8E1D5] shadow-md overflow-hidden"
-                  style={{ transform: `rotate(${rotations[idx % rotations.length]})` }}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
-                    <div className="absolute bottom-3 right-3 bg-[var(--paper)] px-3 py-1 shadow-sm rotate-2">
-                      <span className="font-script text-lg text-[var(--brown)] italic">
-                        {p.name} {p.minutes}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            {/* Cards destra (stile Gallery) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {items.map((item, idx) => (
+                <LocationCard key={item.id} item={item} idx={idx} />
               ))}
             </div>
           </div>
@@ -168,3 +227,4 @@ export function Location() {
     </section>
   )
 }
+```

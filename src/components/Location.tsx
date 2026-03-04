@@ -2,17 +2,15 @@ import React, { useMemo, useState } from 'react'
 import { DecorativeBorder } from './DecorativeElements'
 import { MapPin, Compass, Sun } from 'lucide-react'
 
-type LocationItem = {
-  id: number
+type LocationPhoto = {
   name: string
-  label: string
-  photos: string[]
+  minutes: string
+  url: string
 }
 
 // ottimizzazione automatica Cloudinary (stesso metodo Gallery)
 function optimize(url: string, width: number) {
   if (!url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url
-
   const afterUpload = url.split('/image/upload/')[1] || ''
   const firstSeg = afterUpload.split('/')[0] || ''
   const looksLikeTransform =
@@ -22,126 +20,72 @@ function optimize(url: string, width: number) {
     firstSeg.startsWith('f_') ||
     firstSeg.startsWith('q_') ||
     firstSeg.startsWith('w_')
-
   if (looksLikeTransform) return url
-
-  // ✅ IMPORTANTE: template literal con backticks per w_${width}
   return url.replace('/image/upload/', `/image/upload/f_auto,q_auto,w_${width}/`)
 }
 
-function LocationCard({ item, idx }: { item: LocationItem; idx: number }) {
-  const [photoIdx, setPhotoIdx] = useState(0)
-
-  const currentPhoto = useMemo(() => {
-    const safeIdx = (photoIdx % item.photos.length + item.photos.length) % item.photos.length
-    return item.photos[safeIdx]
-  }, [photoIdx, item.photos])
-
-  const hasMultiple = item.photos.length > 1
-
-  const onClick = () => {
-    if (!hasMultiple) return
-    setPhotoIdx((i) => (i + 1) % item.photos.length)
-  }
-
-  return (
-    <div
-      className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${
-        idx % 2 === 0 ? 'rotate-1' : '-rotate-1'
-      }`}
-    >
-      <button
-        type="button"
-        onClick={onClick}
-        className="aspect-square bg-[var(--paper)] overflow-hidden relative w-full text-left group"
-        aria-label={hasMultiple ? `Apri altre foto: ${item.name}` : `Foto: ${item.name}`}
-      >
-        <img
-          src={optimize(currentPhoto, 1400)}
-          alt={item.name}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-
-        {/* effetto vintage leggero */}
-        <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
-
-        {/* freccia in basso a destra */}
-        {hasMultiple && (
-          <div className="absolute bottom-4 right-4 pointer-events-none">
-            <div className="h-12 w-12 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
-              <span className="text-2xl leading-none text-[var(--brown)]">›</span>
-            </div>
-          </div>
-        )}
-      </button>
-
-      <div className="absolute bottom-4 left-0 w-full text-center pointer-events-none">
-        <span className="font-script text-xl text-[var(--brown)] opacity-60 italic">
-          {item.label}
-        </span>
-      </div>
-    </div>
-  )
-}
-
 export function Location() {
-  const items: LocationItem[] = [
+  // 1 sola “cartolina” che cambia foto a ogni click (stile Gallery)
+  const photos: LocationPhoto[] = [
     {
-      id: 1,
       name: 'Monopoli',
-      label: 'Monopoli 10 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg']
+      minutes: '10 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg'
     },
     {
-      id: 2,
       name: 'Capitolo',
-      label: 'Capitolo 5 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg']
+      minutes: '5 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg'
     },
     {
-      id: 3,
       name: 'Alberobello',
-      label: 'Alberobello 20 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp']
+      minutes: '20 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp'
     },
     {
-      id: 4,
       name: 'Castellana Grotte',
-      label: 'Castellana Grotte 20 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif']
+      minutes: '20 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif'
     },
     {
-      id: 5,
-      name: 'Polignano a Mare',
-      label: 'Polignano 15 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg']
+      name: 'Polignano',
+      minutes: '15 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg'
     },
     {
-      id: 6,
       name: 'Cisternino',
-      label: 'Cisternino 18 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg']
+      minutes: '18 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg'
     },
     {
-      id: 7,
       name: 'Savelletri',
-      label: 'Savelletri 8 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg']
+      minutes: '8 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg'
     },
     {
-      id: 8,
       name: 'Ostuni',
-      label: 'Ostuni 25 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg']
+      minutes: '25 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg'
     },
     {
-      id: 9,
       name: 'Bari',
-      label: 'Bari 35 min',
-      photos: ['https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg']
+      minutes: '35 min',
+      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg'
     }
   ]
+
+  const rotations = ['rotate-1', '-rotate-1', 'rotate-2', '-rotate-2'] as const
+
+  const [photoIdx, setPhotoIdx] = useState(0)
+
+  const current = useMemo(() => {
+    const safeIdx = (photoIdx % photos.length + photos.length) % photos.length
+    return photos[safeIdx]
+  }, [photoIdx])
+
+  const currentRotation = useMemo(() => rotations[photoIdx % rotations.length], [photoIdx])
+
+  const onClick = () => setPhotoIdx((i) => (i + 1) % photos.length)
 
   return (
     <section className="py-20 px-4 bg-paper-texture overflow-hidden">
@@ -153,8 +97,8 @@ export function Location() {
         </div>
 
         <div className="relative bg-[#FDFBF7] p-8 md:p-12 border border-[#E8E1D5] shadow-lg max-w-4xl mx-auto transform rotate-1">
-          <div className="grid md:grid-cols-2 gap-12 items-start">
-            {/* Testo sinistra */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Testo sinistra (IDENTICO al tuo primo script) */}
             <div className="space-y-6">
               <div className="flex items-start gap-4">
                 <MapPin className="w-8 h-8 text-[var(--sienna)] flex-shrink-0 mt-1" />
@@ -172,15 +116,9 @@ export function Location() {
                 <div>
                   <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Nei Dintorni</h3>
                   <ul className="space-y-2 text-[var(--brown)] opacity-80">
-                    <li>• Capitolo (5 min)</li>
-                    <li>• Savelletri (8 min)</li>
-                    <li>• Monopoli (10 min)</li>
                     <li>• Polignano a Mare (15 min)</li>
-                    <li>• Cisternino (18 min)</li>
-                    <li>• Alberobello (20 min)</li>
-                    <li>• Castellana Grotte (20 min)</li>
-                    <li>• Ostuni (25 min)</li>
-                    <li>• Bari (35 min)</li>
+                    <li>• Alberobello Trulli (25 min)</li>
+                    <li>• Ostuni "Città Bianca" (35 min)</li>
                   </ul>
                 </div>
               </div>
@@ -197,15 +135,49 @@ export function Location() {
               </div>
             </div>
 
-            {/* Cards destra (stile Gallery) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {items.map((item, idx) => (
-                <LocationCard key={item.id} item={item} idx={idx} />
-              ))}
+            {/* CARTOLINA DESTRA: 1 immagine che cambia a ogni click (stile Gallery) */}
+            <div
+              className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${currentRotation}`}
+            >
+              <button
+                type="button"
+                onClick={onClick}
+                className="aspect-square bg-[var(--paper)] overflow-hidden relative w-full text-left group"
+                aria-label={`Cambia foto location: ${current.name}`}
+              >
+                <img
+                  src={optimize(current.url, 1400)}
+                  alt={current.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+
+                {/* effetto vintage leggero */}
+                <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
+
+                {/* freccia in basso a destra (sempre visibile) */}
+                <div className="absolute bottom-4 right-4 pointer-events-none">
+                  <div className="h-10 w-10 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                    <span className="text-2xl leading-none text-[var(--brown)]">›</span>
+                  </div>
+                </div>
+
+                {/* etichetta dentro la foto (nome + distanza in corsivo) */}
+                <div className="absolute bottom-4 left-4 bg-[var(--paper)] px-4 py-2 shadow-sm rotate-2 pointer-events-none">
+                  <span className="font-script text-xl text-[var(--brown)] italic">
+                    {current.name} {current.minutes}
+                  </span>
+                </div>
+              </button>
+
+              {/* testo “cartolina” sotto (discreto, come in gallery) */}
+              <div className="absolute bottom-4 left-0 w-full text-center pointer-events-none">
+                <span className="font-script text-xl text-[var(--brown)] opacity-60">{current.name}</span>
+              </div>
             </div>
           </div>
 
-          {/* MAPPA */}
+          {/* MAPPA (IDENTICA al tuo primo script) */}
           <div className="mt-10">
             <div className="relative w-full rounded-sm overflow-hidden border-2 border-[var(--cream)] shadow-md">
               <iframe
@@ -225,7 +197,7 @@ export function Location() {
             </p>
           </div>
 
-          {/* Timbro decorativo */}
+          {/* Timbro decorativo (IDENTICO) */}
           <div className="absolute top-4 right-4 w-24 h-24 border border-[var(--sienna)] opacity-20 rounded-full flex items-center justify-center transform rotate-12">
             <span className="text-xs uppercase tracking-widest text-[var(--sienna)]">Puglia</span>
           </div>

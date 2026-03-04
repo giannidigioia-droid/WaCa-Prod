@@ -8,7 +8,6 @@ type LocationPhoto = {
   url: string
 }
 
-// ottimizzazione automatica Cloudinary (stesso metodo Gallery)
 function optimize(url: string, width: number) {
   if (!url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url
   const afterUpload = url.split('/image/upload/')[1] || ''
@@ -27,55 +26,18 @@ function optimize(url: string, width: number) {
 export function Location() {
 
   const photos: LocationPhoto[] = [
-    {
-      name: 'Monopoli',
-      minutes: '10 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg'
-    },
-    {
-      name: 'Capitolo',
-      minutes: '5 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg'
-    },
-    {
-      name: 'Alberobello',
-      minutes: '20 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp'
-    },
-    {
-      name: 'Castellana Grotte',
-      minutes: '20 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif'
-    },
-    {
-      name: 'Polignano',
-      minutes: '15 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg'
-    },
-    {
-      name: 'Cisternino',
-      minutes: '18 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg'
-    },
-    {
-      name: 'Savelletri',
-      minutes: '8 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg'
-    },
-    {
-      name: 'Ostuni',
-      minutes: '25 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg'
-    },
-    {
-      name: 'Bari',
-      minutes: '35 min',
-      url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg'
-    }
+    { name: 'Monopoli', minutes: '10 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Monopoli-2_sf8xiz.jpg' },
+    { name: 'Capitolo', minutes: '5 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Capitolo_lpgnz6.jpg' },
+    { name: 'Alberobello', minutes: '20 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/alberobello_uhle1w.webp' },
+    { name: 'Castellana Grotte', minutes: '20 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637897/Castellanagrotte_frxiif.avif' },
+    { name: 'Polignano', minutes: '15 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/polignano_kephny.jpg' },
+    { name: 'Cisternino', minutes: '18 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/masseria-cisternino_vgf5rf.jpg' },
+    { name: 'Savelletri', minutes: '8 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637894/Savelletri_Fasano_xcdg9d.jpg' },
+    { name: 'Ostuni', minutes: '25 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637896/ostuni-mura_ja0wuu.jpg' },
+    { name: 'Bari', minutes: '35 min', url: 'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1772637895/bari_v7vhei.jpg' }
   ]
 
   const rotations = ['rotate-1', '-rotate-1', 'rotate-2', '-rotate-2'] as const
-
   const [photoIdx, setPhotoIdx] = useState(0)
 
   const current = useMemo(() => {
@@ -151,13 +113,13 @@ export function Location() {
 
             </div>
 
-            {/* Cartolina rotante */}
-            <div className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${currentRotation}`}>
+            {/* Foto rotante */}
+            <div className={`relative transform transition-all duration-500 hover:scale-105 ${currentRotation}`}>
 
               <button
                 type="button"
                 onClick={onClick}
-                className="aspect-square bg-[var(--paper)] overflow-hidden relative w-full text-left group"
+                className="aspect-square overflow-hidden relative w-full text-left group rounded-sm shadow-md"
                 aria-label={`Cambia foto location: ${current.name}`}
               >
 

@@ -130,8 +130,8 @@ export function Location() {
                   </h3>
                   <ul className="space-y-2 text-[var(--brown)] opacity-80">
                     <li>• Polignano a Mare (15 min)</li>
-                    <li>• Alberobello Trulli (25 min)</li>
-                    <li>• Ostuni "Città Bianca" (35 min)</li>
+                    <li>• Alberobello Trulli (20 min)</li>
+                    <li>• Ostuni "Città Bianca" (25 min)</li>
                   </ul>
                 </div>
               </div>
@@ -170,14 +170,12 @@ export function Location() {
 
                 <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
 
-                {/* freccia click */}
                 <div className="absolute bottom-4 right-4 pointer-events-none">
                   <div className="h-10 w-10 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
                     <span className="text-2xl leading-none text-[var(--brown)]">›</span>
                   </div>
                 </div>
 
-                {/* etichetta nella foto */}
                 <div className="absolute bottom-4 left-4 bg-[var(--paper)] px-4 py-2 shadow-sm rotate-2 pointer-events-none">
                   <span className="font-script text-xl text-[var(--brown)] italic">
                     {current.name} {current.minutes}
@@ -210,7 +208,6 @@ export function Location() {
             </p>
           </div>
 
-          {/* Timbro */}
           <div className="absolute top-4 right-4 w-24 h-24 border border-[var(--sienna)] opacity-20 rounded-full flex items-center justify-center transform rotate-12">
             <span className="text-xs uppercase tracking-widest text-[var(--sienna)]">
               Puglia

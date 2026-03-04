@@ -25,7 +25,7 @@ function optimize(url: string, width: number) {
 }
 
 export function Location() {
-  // 1 sola “cartolina” che cambia foto a ogni click (stile Gallery)
+
   const photos: LocationPhoto[] = [
     {
       name: 'Monopoli',
@@ -90,23 +90,34 @@ export function Location() {
   return (
     <section className="py-20 px-4 bg-paper-texture overflow-hidden">
       <div className="max-w-5xl mx-auto">
+
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl text-[var(--brown)] mb-4">Dove Siamo</h2>
-          <p className="font-script text-2xl text-[var(--sienna)]">Where We Are</p>
+          <h2 className="text-4xl md:text-5xl text-[var(--brown)] mb-4">
+            Dove Siamo
+          </h2>
+          <p className="font-script text-2xl text-[var(--sienna)]">
+            Where We Are
+          </p>
           <DecorativeBorder className="w-48 mx-auto mt-6 text-[var(--sage)]" />
         </div>
 
         <div className="relative bg-[#FDFBF7] p-8 md:p-12 border border-[#E8E1D5] shadow-lg max-w-4xl mx-auto transform rotate-1">
+
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Testo sinistra (IDENTICO al tuo primo script) */}
+
+            {/* Testo sinistra */}
             <div className="space-y-6">
+
               <div className="flex items-start gap-4">
                 <MapPin className="w-8 h-8 text-[var(--sienna)] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Monopoli, Puglia</h3>
+                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">
+                    Monopoli, Puglia
+                  </h3>
                   <p className="text-[var(--brown)] opacity-80 leading-relaxed">
-                    Located in the countryside among centuries-old olive trees, WaCa Apulian Villa is just a few
-                    minutes from the crystal-clear waters of the Adriatic Sea and the historic center of Monopoli.
+                    Located in the countryside among centuries-old olive trees, WaCa Apulian
+                    Villa is just a few minutes from the crystal-clear waters of the Adriatic
+                    Sea and the historic center of Monopoli.
                   </p>
                 </div>
               </div>
@@ -114,7 +125,9 @@ export function Location() {
               <div className="flex items-start gap-4">
                 <Compass className="w-8 h-8 text-[var(--sienna)] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Nei Dintorni</h3>
+                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">
+                    Nei Dintorni
+                  </h3>
                   <ul className="space-y-2 text-[var(--brown)] opacity-80">
                     <li>• Polignano a Mare (15 min)</li>
                     <li>• Alberobello Trulli (25 min)</li>
@@ -126,25 +139,28 @@ export function Location() {
               <div className="flex items-start gap-4">
                 <Sun className="w-8 h-8 text-[var(--sienna)] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Il Territorio</h3>
+                  <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">
+                    Il Territorio
+                  </h3>
                   <p className="text-[var(--brown)] opacity-80 text-[16px]">
-                    Discover the Itria Valley, savor the local cuisine, and experience authentic Apulian hospitality
-                    among the sea, historic villages, and golden sunsets.
+                    Discover the Itria Valley, savor the local cuisine, and experience authentic
+                    Apulian hospitality among the sea, historic villages, and golden sunsets.
                   </p>
                 </div>
               </div>
+
             </div>
 
-            {/* CARTOLINA DESTRA: 1 immagine che cambia a ogni click (stile Gallery) */}
-            <div
-              className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${currentRotation}`}
-            >
+            {/* Cartolina rotante */}
+            <div className={`vintage-card bg-white p-3 pb-12 relative transform transition-all duration-500 hover:z-10 hover:scale-105 ${currentRotation}`}>
+
               <button
                 type="button"
                 onClick={onClick}
                 className="aspect-square bg-[var(--paper)] overflow-hidden relative w-full text-left group"
                 aria-label={`Cambia foto location: ${current.name}`}
               >
+
                 <img
                   src={optimize(current.url, 1400)}
                   alt={current.name}
@@ -152,32 +168,29 @@ export function Location() {
                   loading="lazy"
                 />
 
-                {/* effetto vintage leggero */}
                 <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
 
-                {/* freccia in basso a destra (sempre visibile) */}
+                {/* freccia click */}
                 <div className="absolute bottom-4 right-4 pointer-events-none">
                   <div className="h-10 w-10 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
                     <span className="text-2xl leading-none text-[var(--brown)]">›</span>
                   </div>
                 </div>
 
-                {/* etichetta dentro la foto (nome + distanza in corsivo) */}
+                {/* etichetta nella foto */}
                 <div className="absolute bottom-4 left-4 bg-[var(--paper)] px-4 py-2 shadow-sm rotate-2 pointer-events-none">
                   <span className="font-script text-xl text-[var(--brown)] italic">
                     {current.name} {current.minutes}
                   </span>
                 </div>
+
               </button>
 
-              {/* testo “cartolina” sotto (discreto, come in gallery) */}
-              <div className="absolute bottom-4 left-0 w-full text-center pointer-events-none">
-                <span className="font-script text-xl text-[var(--brown)] opacity-60">{current.name}</span>
-              </div>
             </div>
+
           </div>
 
-          {/* MAPPA (IDENTICA al tuo primo script) */}
+          {/* MAPPA */}
           <div className="mt-10">
             <div className="relative w-full rounded-sm overflow-hidden border-2 border-[var(--cream)] shadow-md">
               <iframe
@@ -197,10 +210,13 @@ export function Location() {
             </p>
           </div>
 
-          {/* Timbro decorativo (IDENTICO) */}
+          {/* Timbro */}
           <div className="absolute top-4 right-4 w-24 h-24 border border-[var(--sienna)] opacity-20 rounded-full flex items-center justify-center transform rotate-12">
-            <span className="text-xs uppercase tracking-widest text-[var(--sienna)]">Puglia</span>
+            <span className="text-xs uppercase tracking-widest text-[var(--sienna)]">
+              Puglia
+            </span>
           </div>
+
         </div>
       </div>
     </section>

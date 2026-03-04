@@ -1,4 +1,3 @@
-```tsx
 import React, { useMemo, useState } from 'react'
 import { DecorativeBorder } from './DecorativeElements'
 import { MapPin, Compass, Sun } from 'lucide-react'
@@ -6,13 +5,14 @@ import { MapPin, Compass, Sun } from 'lucide-react'
 type LocationItem = {
   id: number
   name: string
-  label: string // es: "Monopoli 10 min"
+  label: string
   photos: string[]
 }
 
 // ottimizzazione automatica Cloudinary (stesso metodo Gallery)
 function optimize(url: string, width: number) {
   if (!url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url
+
   const afterUpload = url.split('/image/upload/')[1] || ''
   const firstSeg = afterUpload.split('/')[0] || ''
   const looksLikeTransform =
@@ -22,7 +22,10 @@ function optimize(url: string, width: number) {
     firstSeg.startsWith('f_') ||
     firstSeg.startsWith('q_') ||
     firstSeg.startsWith('w_')
+
   if (looksLikeTransform) return url
+
+  // ✅ IMPORTANTE: template literal con backticks per w_${width}
   return url.replace('/image/upload/', `/image/upload/f_auto,q_auto,w_${width}/`)
 }
 
@@ -63,7 +66,7 @@ function LocationCard({ item, idx }: { item: LocationItem; idx: number }) {
         {/* effetto vintage leggero */}
         <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
 
-        {/* freccia in basso a destra (solo se più foto) */}
+        {/* freccia in basso a destra */}
         {hasMultiple && (
           <div className="absolute bottom-4 right-4 pointer-events-none">
             <div className="h-12 w-12 rounded-full bg-white/80 backdrop-blur flex items-center justify-center shadow-md border border-black/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
@@ -170,8 +173,12 @@ export function Location() {
                   <h3 className="font-serif text-2xl text-[var(--brown)] mb-2">Nei Dintorni</h3>
                   <ul className="space-y-2 text-[var(--brown)] opacity-80">
                     <li>• Capitolo (5 min)</li>
+                    <li>• Savelletri (8 min)</li>
+                    <li>• Monopoli (10 min)</li>
                     <li>• Polignano a Mare (15 min)</li>
+                    <li>• Cisternino (18 min)</li>
                     <li>• Alberobello (20 min)</li>
+                    <li>• Castellana Grotte (20 min)</li>
                     <li>• Ostuni (25 min)</li>
                     <li>• Bari (35 min)</li>
                   </ul>
@@ -198,7 +205,7 @@ export function Location() {
             </div>
           </div>
 
-          {/* MAPPA (Place embed reale) */}
+          {/* MAPPA */}
           <div className="mt-10">
             <div className="relative w-full rounded-sm overflow-hidden border-2 border-[var(--cream)] shadow-md">
               <iframe
@@ -227,4 +234,3 @@ export function Location() {
     </section>
   )
 }
-```

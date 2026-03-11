@@ -281,7 +281,7 @@ export function BookingCTA() {
                             setDiscountCode(e.target.value.toUpperCase())
                             resetFeedback()
                           }}
-                          placeholder="WACA10"
+                          placeholder="Codice"
                           className={inputCls}
                         />
                       </div>

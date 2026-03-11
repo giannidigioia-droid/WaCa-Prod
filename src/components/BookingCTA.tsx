@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import emailjs from '@emailjs/browser'
 import { OliveBranch } from './DecorativeElements'
-import { Calendar, Mail, Users, Phone, AtSign, X } from 'lucide-react'
+import { Calendar, Mail, Users, Phone, AtSign, X, Tag } from 'lucide-react'
 
 /**
  * EmailJS config (your real values)
@@ -54,6 +54,7 @@ export function BookingCTA() {
   const [children, setChildren] = useState<number>(0)
   const [childrenAges, setChildrenAges] = useState<string>('')
   const [fullName, setFullName] = useState<string>('')
+  const [discountCode, setDiscountCode] = useState<string>('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
 
@@ -62,7 +63,6 @@ export function BookingCTA() {
     if (!open) return
     const setVh = () => {
       const vh = window.innerHeight * 0.01
-      // ✅ FIX: string template must use backticks
       document.documentElement.style.setProperty('--vh', `${vh}px`)
     }
     setVh()
@@ -127,6 +127,7 @@ export function BookingCTA() {
       const templateParams = {
         title: 'Richiesta disponibilità WaCa',
         name: fullName.trim() || 'Ospite WaCa',
+        discount_code: discountCode.trim() || '-',
         checkin: checkIn,
         checkout: checkOut,
         nights: String(nights),
@@ -144,9 +145,7 @@ export function BookingCTA() {
         EMAILJS_PUBLIC_KEY
       )
 
-      // ✅ Fire conversion ONLY on success
       gtag_report_conversion()
-
       setSentOk(true)
     } catch (err: any) {
       setSentOk(false)
@@ -156,7 +155,6 @@ export function BookingCTA() {
     }
   }
 
-  // small shared classes (compact)
   const labelCls = 'block text-[11px] font-serif mb-1 opacity-80'
   const inputCls =
     'w-full border border-[var(--cream)] bg-white px-3 py-2 font-serif text-sm leading-tight'
@@ -168,7 +166,6 @@ export function BookingCTA() {
       id="booking"
       className="py-24 px-4 bg-[var(--sienna)] relative overflow-hidden text-[var(--paper)] scroll-mt-24"
     >
-      {/* Background pattern */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <OliveBranch className="w-full h-full object-cover text-white transform scale-150 opacity-20" />
       </div>
@@ -187,7 +184,6 @@ export function BookingCTA() {
           email per disponibilità e miglior tariffa garantita.
         </p>
 
-        {/* Single CTA */}
         <div className="flex justify-center">
           <button
             type="button"
@@ -206,7 +202,6 @@ export function BookingCTA() {
           Minimum stay: 3 nights • Best Price Guaranteed
         </p>
 
-        {/* Modal */}
         {open && (
           <div
             className="fixed inset-0 z-50"
@@ -214,10 +209,8 @@ export function BookingCTA() {
             aria-modal="true"
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
           >
-            {/* Backdrop */}
             <div className="absolute inset-0 bg-black/55" onClick={closeModal} />
 
-            {/* Compact card */}
             <div
               className="absolute inset-0 flex items-center justify-center p-3"
               style={{
@@ -226,7 +219,6 @@ export function BookingCTA() {
               }}
             >
               <div className="relative w-full max-w-md bg-[var(--paper)] text-[var(--brown)] border border-[var(--cream)] shadow-2xl rounded-sm overflow-hidden">
-                {/* Header */}
                 <div className="px-3 py-2 border-b border-[var(--cream)] bg-[var(--paper)] flex items-center justify-between gap-2">
                   <div className="text-left min-w-0">
                     <div className="font-serif text-sm leading-tight">
@@ -248,7 +240,6 @@ export function BookingCTA() {
                   </button>
                 </div>
 
-                {/* Content */}
                 <div className="px-3 py-3">
                   {(sentOk === true || sentOk === false || errorMsg) && (
                     <div
@@ -265,7 +256,7 @@ export function BookingCTA() {
                   )}
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="col-span-2">
+                    <div>
                       <label className={labelCls}>Nome e Cognome</label>
                       <input
                         type="text"
@@ -277,6 +268,23 @@ export function BookingCTA() {
                         placeholder="Nome Cognome"
                         className={inputCls}
                       />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Codice sconto</label>
+                      <div className={iconWrap}>
+                        <Tag className={iconCls} />
+                        <input
+                          type="text"
+                          value={discountCode}
+                          onChange={(e) => {
+                            setDiscountCode(e.target.value.toUpperCase())
+                            resetFeedback()
+                          }}
+                          placeholder="WACA10"
+                          className={inputCls}
+                        />
+                      </div>
                     </div>
 
                     <div>

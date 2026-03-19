@@ -17,31 +17,53 @@ export function ApartmentCard({
   className = ''
 }: ApartmentCardProps) {
   const [flipped, setFlipped] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // ✅ FINAL: Heaven & Oasis swapped (NO duplicates)
-  const images: Record<string, string> = useMemo(
+  const images: Record<string, string[]> = useMemo(
     () => ({
-      Dream:
+      Dream: [
         'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771582089/b9dd12b5-38cb-4e6c-845d-194d27f96e13.png_2023-09-08_08_42_18_myofms.jpg',
-      Heaven:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822084_wurbyn.jpg',
-      Oasis:
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582197/soggiorno_b72bp5.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/stanzamatrimoniale_tgtcap.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/bagno1_rqfoac.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582190/PatioSudTavolo_sbht2t.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582190/PatioSudDivano_wysiyl.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582194/stanzetta1posto_ryqnqg.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582197/stanzetta2posti_gqwhko.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582186/PatioSudtavolopiscina_cendix.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582189/Cucinafinestraaperta_amj5lo.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582200/bagno2_s1vwnu.jpg',
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/bagno1_rqfoac.jpg'
+      ],
+      Heaven: [
+        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822084_wurbyn.jpg'
+      ],
+      Oasis: [
         'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581999/701822049_mqvxn3.jpg'
+      ]
     }),
     []
   );
 
-  const imageUrl = images[name];
+  const imageUrl = images[name]?.[currentImageIndex];
 
   const toggle = () => {
-    setFlipped((prev) => !prev);
+    if (!flipped) {
+      setFlipped(true);
+    } else if (images[name] && images[name].length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % images[name].length);
+    } else {
+      setFlipped(false);
+    }
   };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
         setFlipped(false);
+        setCurrentImageIndex(0);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -50,7 +72,10 @@ export function ApartmentCard({
 
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
-      if (e.key === 'Escape') setFlipped(false);
+      if (e.key === 'Escape') {
+        setFlipped(false);
+        setCurrentImageIndex(0);
+      }
     }
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);

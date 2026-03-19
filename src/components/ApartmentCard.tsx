@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PostcardStamp, OliveBranch } from './DecorativeElements';
 
 interface ApartmentCardProps {
@@ -16,13 +16,14 @@ export function ApartmentCard({
   rotation = '0deg',
   className = ''
 }: ApartmentCardProps) {
-
   const [flipped, setFlipped] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // 👇 MULTI IMMAGINI (Dream ha carousel)
+  // normalizza il nome
+  const normalizedName = name.trim().toLowerCase();
+
   const images: Record<string, string[]> = {
-    Dream: [
+    dream: [
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771578265/PatioSudtavolopiscina_em7pyc.jpg',
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582197/soggiorno_b72bp5.jpg',
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/stanzamatrimoniale_tgtcap.jpg',
@@ -35,28 +36,28 @@ export function ApartmentCard({
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582189/Cucinafinestraaperta_amj5lo.jpg',
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582200/bagno2_s1vwnu.jpg'
     ],
-    Heaven: [
+    heaven: [
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581295/701822006_fj57gi.jpg'
     ],
-    Oasis: [
+    oasis: [
       'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771578497/701822049_1_rlxdy3.jpg'
     ]
   };
 
-  const imageList = images[name] || [];
-  const imageUrl = imageList[currentIndex];
+  const imageList = useMemo(() => images[normalizedName] || [], [normalizedName]);
+  const imageUrl = imageList[currentIndex] || '';
 
-  // 👇 CLICK LOGIC
-  const handleClick = () => {
+  const handleCardClick = () => {
     if (!flipped) {
       setFlipped(true);
-    } else {
-      // scorri immagini
+      return;
+    }
+
+    if (imageList.length > 1) {
       setCurrentIndex((prev) => (prev + 1) % imageList.length);
     }
   };
 
-  // 👇 RESET quando esci
   const handleMouseLeave = () => {
     setFlipped(false);
     setCurrentIndex(0);
@@ -64,16 +65,14 @@ export function ApartmentCard({
 
   return (
     <div
-      className={`relative max-w-sm w-full ${className}`}
+      className={`relative max-w-sm w-full cursor-pointer ${className}`}
       style={{
         transform: `rotate(${rotation})`,
         perspective: '1200px'
       }}
-      onClick={handleClick}
+      onClick={handleCardClick}
       onMouseLeave={handleMouseLeave}
     >
-
-      {/* CONTENITORE */}
       <div
         className="relative w-full h-[520px] transition-transform duration-700"
         style={{
@@ -81,13 +80,11 @@ export function ApartmentCard({
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
         }}
       >
-
         {/* FRONTE */}
         <div
           className="absolute inset-0 bg-[#FDFBF7] p-6 md:p-8 vintage-card border border-[#E8E1D5] flex flex-col"
           style={{ backfaceVisibility: 'hidden' }}
         >
-
           <div className="absolute top-4 right-4 w-16 h-20 opacity-80">
             <PostcardStamp className="w-full h-full" />
           </div>
@@ -95,7 +92,6 @@ export function ApartmentCard({
           <div className="absolute top-4 left-1/2 -translate-x-1/2 w-px h-full bg-gray-200 opacity-30 pointer-events-none hidden md:block" />
 
           <div className="relative z-10 h-full flex flex-col">
-
             <div className="mb-6 pr-16">
               <h3 className="font-script text-4xl text-[var(--sienna)] mb-2">
                 {name}
@@ -111,7 +107,10 @@ export function ApartmentCard({
               <div className="pt-4 border-t border-dashed border-[var(--sage)] border-opacity-30">
                 <ul className="space-y-2">
                   {features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center text-sm font-serif text-[var(--brown)] opacity-80">
+                    <li
+                      key={idx}
+                      className="flex items-center text-sm font-serif text-[var(--brown)] opacity-80"
+                    >
                       <span className="w-1.5 h-1.5 bg-[var(--sienna)] rounded-full mr-2" />
                       {feature}
                     </li>
@@ -141,34 +140,29 @@ export function ApartmentCard({
             transform: 'rotateY(180deg)'
           }}
         >
-
           {imageUrl && (
             <img
               src={imageUrl}
-              alt={name}
+              alt={`${name} ${currentIndex + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
             />
           )}
 
-          {/* overlay vintage */}
           <div className="absolute inset-0 bg-[#704214] mix-blend-color opacity-10 pointer-events-none" />
 
-          {/* label */}
           <div className="absolute bottom-4 right-4 bg-[var(--paper)] px-4 py-2 rotate-2 shadow-sm">
             <span className="font-script text-xl text-[var(--brown)]">
               {name}
             </span>
           </div>
 
-          {/* indicatore */}
           {imageList.length > 1 && (
             <div className="absolute bottom-4 left-4 text-xs font-serif text-white bg-black/40 px-2 py-1 rounded">
               {currentIndex + 1} / {imageList.length}
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

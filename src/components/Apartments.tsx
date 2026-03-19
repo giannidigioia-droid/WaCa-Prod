@@ -17,31 +17,69 @@ export function ApartmentCard({
   className = ''
 }: ApartmentCardProps) {
   const [flipped, setFlipped] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
   // ✅ FINAL: Heaven & Oasis swapped (NO duplicates)
-  const images: Record<string, string> = useMemo(
-    () => ({
-      Dream:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771582089/b9dd12b5-38cb-4e6c-845d-194d27f96e13.png_2023-09-08_08_42_18_myofms.jpg',
-      Heaven:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822084_wurbyn.jpg',
-      Oasis:
-        'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581999/701822049_mqvxn3.jpg'
-    }),
-    []
-  );
+ const images: Record<string, string[]> = useMemo(
+  () => ({
+    Dream: [
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771582089/b9dd12b5-38cb-4e6c-845d-194d27f96e13.png_2023-09-08_08_42_18_myofms.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582197/soggiorno_b72bp5.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/stanzamatrimoniale_tgtcap.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582196/bagno1_rqfoac.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582190/PatioSudTavolo_sbht2t.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582190/PatioSudDivano_wysiyl.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582194/stanzetta1posto_ryqnqg.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582197/stanzetta2posti_gqwhko.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582186/PatioSudtavolopiscina_cendix.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582189/Cucinafinestraaperta_amj5lo.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582200/bagno2_s1vwnu.jpg'
+    ],
+    Heaven: [
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581998/701822084_wurbyn.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582091/1cae34a1-6601-47ba-a50f-e5c197502e74_2023-09-08_08_42_13_aifps4.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582079/4542d8a2-3fac-4afe-9a30-8372a3209b02.jpeg_2023-09-08_08_42_27_as0gyq.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582075/6b168170-f02f-424f-a4a4-fb780323cf07.jpeg_2023-09-08_08_42_30_mb495z.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582075/cd009c0e-2434-4f96-9bb6-ababea44e331.jpeg_2023-09-08_08_42_29_ck0ey6.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582074/0bf2b236-c5dc-430e-a4f4-63d38a704dda.jpeg_2023-09-08_08_42_32_ssyded.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582071/2672a5e1-8427-4437-a754-a2be20d2ca25.jpeg_2023-09-08_08_42_34_kwwqnh.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582072/33c54f6f-fe6c-45d6-964e-89f1244786ce.jpeg_2023-09-08_08_42_32_xbdqrg.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582078/cc764327-c8c3-4992-a25d-0f03d6af2cef.jpeg_2023-09-08_08_42_27_vzgg2f.jpg'
+    ],
+    Oasis: [
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/f_auto,q_auto,w_1600/v1771581999/701822049_mqvxn3.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582056/aac82b47-f39f-4d43-85ca-ef506c73de4a.jpeg_2023-09-08_08_42_46_e1t2x1.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582053/8d19304f-1918-4fb4-b56f-470ac7eef1e0.jpeg_2023-09-08_08_42_49_de4m69.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582051/dfce715d-80f5-4249-b2c2-77820ed75e49.jpeg_2023-09-08_08_42_51_re6ris.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582051/f81328c4-3376-4ec9-8981-a8dee33682cf.jpeg_2023-09-08_08_42_52_binufj.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582049/4f82d3f5-14b8-4ac5-960d-974aa97c0452.jpeg_2023-09-08_08_42_52_g5uy1r.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582049/415f1f61-649e-43c2-aa98-7d5c09b62161.jpeg_2023-09-08_08_42_53_pjzyaf.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582049/e163b46b-6755-4ee3-8a18-35c26bc270c0.jpeg_2023-09-08_08_42_54_yovpky.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582041/479240534_rmnfi9.jpg',
+      'https://res.cloudinary.com/dfu9nzn8r/image/upload/v1771582040/479240574_trattk.jpg'
+    ]
+  }),
+  []
+);
 
-  const imageUrl = images[name];
+  const imageUrl = images[name]?.[currentImageIndex];
 
   const toggle = () => {
-    setFlipped((prev) => !prev);
+    if (!flipped) {
+      setFlipped(true);
+    } else if (images[name] && images[name].length > 1) {
+      setCurrentImageIndex((prev) => (prev + 1) % images[name].length);
+    } else {
+      setFlipped(false);
+    }
   };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
         setFlipped(false);
+        setCurrentImageIndex(0);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -50,7 +88,10 @@ export function ApartmentCard({
 
   useEffect(() => {
     function handleEsc(e: KeyboardEvent) {
-      if (e.key === 'Escape') setFlipped(false);
+      if (e.key === 'Escape') {
+        setFlipped(false);
+        setCurrentImageIndex(0);
+      }
     }
     document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);

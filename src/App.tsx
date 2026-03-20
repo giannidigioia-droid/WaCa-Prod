@@ -32,7 +32,10 @@ export function App() {
           <Apartments />
         </div>
 
-        <Gallery />
+        {/* AGGIUNTO L'ID "moments" PER LA GALLERY */}
+        <div id="moments">
+          <Gallery />
+        </div>
 
         <div id="amenities">
           <Amenities />
@@ -46,7 +49,10 @@ export function App() {
 
         <Location />
 
-        <BookingCTA />
+        {/* AGGIUNTO L'ID "booking" PER LA SEZIONE BOOKING */}
+        <div id="booking">
+          <BookingCTA />
+        </div>
 
         <div id="contact">
           <Footer />

@@ -1,16 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import emailjs from '@emailjs/browser'
 import { OliveBranch } from './DecorativeElements'
-import {
-  Calendar,
-  Mail,
-  Users,
-  Phone,
-  AtSign,
-  X,
-  Tag,
-  ChevronDown,
-} from 'lucide-react'
+import { Calendar, Mail, Users, Phone, AtSign, X, ArrowRight } from 'lucide-react'
 
 const EMAILJS_SERVICE_ID = 'service_udnxwt2'
 const EMAILJS_TEMPLATE_ID = 'template_72hewse'
@@ -39,7 +30,6 @@ function gtag_report_conversion() {
 }
 
 export function BookingCTA() {
-  const [open, setOpen] = useState(false)
   const [sending, setSending] = useState(false)
   const [sentOk, setSentOk] = useState<null | boolean>(null)
   const [errorMsg, setErrorMsg] = useState('')
@@ -48,22 +38,9 @@ export function BookingCTA() {
   const [checkOut, setCheckOut] = useState('')
   const [adults, setAdults] = useState<number>(2)
   const [children, setChildren] = useState<number>(0)
-  const [childrenAges, setChildrenAges] = useState('')
   const [fullName, setFullName] = useState('')
-  const [discountCode, setDiscountCode] = useState('')
-  const [showDiscount, setShowDiscount] = useState(false)
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-
-  const formRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open || !formRef.current) return
-    const timer = setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 120)
-    return () => clearTimeout(timer)
-  }, [open])
 
   const isEmailValid =
     email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
@@ -93,7 +70,6 @@ export function BookingCTA() {
     !dateError &&
     adults >= 1 &&
     children >= 0 &&
-    (children === 0 || childrenAges.trim().length > 0) &&
     fullName.trim().length > 1 &&
     hasAtLeastOneContact &&
     !sending
@@ -108,15 +84,11 @@ export function BookingCTA() {
     setCheckOut('')
     setAdults(2)
     setChildren(0)
-    setChildrenAges('')
     setFullName('')
-    setDiscountCode('')
-    setShowDiscount(false)
     setEmail('')
     setPhone('')
     setSentOk(null)
     setErrorMsg('')
-    setOpen(false)
   }
 
   const sendEmail = async () => {
@@ -136,13 +108,11 @@ export function BookingCTA() {
       const templateParams = {
         title: 'Richiesta disponibilità WaCa',
         name: fullName.trim() || 'Ospite WaCa',
-        discount_code: discountCode.trim() || '-',
         checkin: checkIn,
         checkout: checkOut,
         nights: String(nights),
         adults: String(adults),
         children: String(children),
-        ages: children > 0 ? childrenAges.trim() : '-',
         email: email.trim() || '-',
         phone: phone.trim() || '-',
       }
@@ -166,159 +136,110 @@ export function BookingCTA() {
     }
   }
 
-  const labelCls = 'block text-[12px] font-serif mb-1.5 opacity-80 text-left'
+  const labelCls =
+    'block text-[11px] md:text-[12px] font-serif mb-1 text-[var(--brown)]/85'
   const inputCls =
-    'w-full min-h-[50px] border border-[var(--cream)] bg-white px-4 py-3 font-serif text-[16px] leading-tight rounded-sm text-[var(--brown)] placeholder:text-[var(--brown)]/45 focus:outline-none focus:ring-2 focus:ring-[var(--sienna)]/20'
-  const iconWrap = 'flex items-center gap-2'
-  const iconCls = 'w-5 h-5 opacity-55 shrink-0'
-  const sectionCard =
-    'bg-[var(--paper)] text-[var(--brown)] shadow-[0_12px_40px_rgba(0,0,0,0.08)] rounded-sm'
-  const softPanel = 'border border-[var(--cream)]/80 bg-white/40 rounded-sm'
+    'w-full h-[42px] md:h-[44px] border border-[#e7dccb] bg-[#fbf7f0] px-3 py-2 font-serif text-[15px] text-[var(--brown)] rounded-none outline-none focus:border-[var(--sienna)] focus:ring-1 focus:ring-[var(--sienna)]'
+  const smallInputWrap = 'flex items-center gap-2'
+  const iconCls = 'w-4 h-4 text-[var(--brown)]/50 shrink-0'
 
   return (
     <section
       id="booking"
-      className="py-24 px-4 bg-[var(--sienna)] relative overflow-hidden text-[var(--paper)] scroll-mt-24"
+      className="py-20 px-4 bg-[var(--sienna)] relative overflow-hidden text-[var(--paper)] scroll-mt-24"
     >
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <OliveBranch className="w-full h-full object-cover text-white transform scale-150 opacity-20" />
       </div>
 
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="font-script text-5xl md:text-7xl mb-6 text-[var(--cream)]">
-          Prenota il Tuo Soggiorno
-        </h2>
+      <div className="relative z-10 max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 className="font-script text-5xl md:text-7xl mb-4 text-[var(--cream)]">
+            Prenota il Tuo Soggiorno
+          </h2>
+          <p className="font-serif text-xl md:text-2xl text-[var(--paper)] opacity-90">
+            Richiesta disponibilità diretta
+          </p>
+        </div>
 
-        <p className="font-serif text-2xl md:text-3xl mb-8 text-[var(--paper)] opacity-90">
-          Book Your Stay in Puglia
-        </p>
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-[340px] md:max-w-[360px]">
+            <div className="absolute inset-0 translate-x-2 translate-y-2 border border-[rgba(120,84,58,0.18)] bg-[#efe6d7]" />
 
-        {!open && (
-          <>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed opacity-90">
-              Inserisci pochi dettagli essenziali: ti risponderemo con disponibilità e
-              miglior tariffa garantita.
-            </p>
-
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  resetFeedback()
-                  setOpen(true)
-                }}
-                className="group min-h-[56px] border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all duration-200 active:scale-[0.99]"
-              >
-                <Calendar className="w-6 h-6 transition-transform duration-200 group-hover:translate-y-[-1px]" aria-hidden="true" />
-                <span>Check Availability</span>
-              </button>
-            </div>
-
-            <p className="mt-8 text-sm opacity-60 font-serif uppercase tracking-widest">
-              Minimum stay: 3 nights • Best Price Guaranteed
-            </p>
-          </>
-        )}
-
-        {open && (
-          <div
-            ref={formRef}
-            className={`mt-8 max-w-2xl mx-auto text-left ${sectionCard}`}
-          >
-            <div className="px-5 py-4 md:px-7 md:py-5 border-b border-[var(--cream)] flex items-center justify-between gap-4">
-              <div>
-                <h3 className="font-serif text-xl md:text-2xl font-semibold">
-                  Richiesta disponibilità
-                </h3>
-                <p className="font-serif text-[13px] md:text-[14px] opacity-70">
-                  Compila e invia in meno di 1 minuto
-                </p>
+            <div className="relative bg-[#f7f1e6] border border-[#dccfbf] shadow-[0_12px_35px_rgba(74,43,24,0.14)] px-4 pt-10 pb-4 md:px-5">
+              <div className="absolute left-1/2 -translate-x-1/2 -top-6">
+                <div className="h-[56px] w-[56px] rounded-full bg-[var(--sienna)] text-[var(--paper)] border-4 border-[#f7f1e6] flex items-center justify-center text-[9px] font-serif uppercase tracking-[0.12em] text-center leading-tight shadow-sm">
+                  Direct
+                  <br />
+                  Booking
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="group inline-flex items-center justify-center min-w-[48px] min-h-[48px] border border-[var(--cream)] rounded-sm hover:bg-[var(--cream)]/70 transition-all duration-200"
-                aria-label="Chiudi il form"
-              >
-                <X className="w-5 h-5 transition-transform duration-200 group-hover:rotate-90" aria-hidden="true" />
-              </button>
-            </div>
+              <div className="absolute inset-2 pointer-events-none border border-[rgba(160,132,102,0.18)]" />
 
-            <div className="p-5 md:p-7">
-              {(sentOk === true || sentOk === false || errorMsg) && (
-                <div
-                  className={`mb-6 p-4 border font-serif text-[14px] leading-snug rounded-sm ${
-                    sentOk
-                      ? 'border-green-300 bg-green-50 text-green-900'
-                      : 'border-red-200 bg-red-50 text-red-900'
-                  }`}
-                >
-                  {sentOk === true && (
-                    <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
-                  )}
-                  {sentOk === false && <div>❌ {errorMsg}</div>}
-                  {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
-                </div>
-              )}
+              <div className="relative space-y-3">
+                {(sentOk === true || sentOk === false || errorMsg) && (
+                  <div
+                    className={`p-2 border font-serif text-[12px] leading-snug ${
+                      sentOk
+                        ? 'border-green-300 bg-green-50 text-green-900'
+                        : 'border-red-200 bg-red-50 text-red-900'
+                    }`}
+                  >
+                    {sentOk === true && (
+                      <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
+                    )}
+                    {sentOk === false && <div>❌ {errorMsg}</div>}
+                    {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
+                  </div>
+                )}
 
-              {sentOk !== true && (
-                <div className="space-y-6">
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Calendar className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Date del soggiorno
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sentOk !== true && (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={labelCls}>Check-in</label>
-                        <input
-                          type="date"
-                          value={checkIn}
-                          onChange={(e) => {
-                            setCheckIn(e.target.value)
-                            resetFeedback()
-                          }}
-                          className={inputCls}
-                        />
+                        <label className={labelCls}>Check-In</label>
+                        <div className={smallInputWrap}>
+                          <Calendar className={iconCls} aria-hidden="true" />
+                          <input
+                            type="date"
+                            value={checkIn}
+                            onChange={(e) => {
+                              setCheckIn(e.target.value)
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
+                        </div>
                       </div>
 
                       <div>
-                        <label className={labelCls}>Check-out</label>
-                        <input
-                          type="date"
-                          value={checkOut}
-                          onChange={(e) => {
-                            setCheckOut(e.target.value)
-                            resetFeedback()
-                          }}
-                          className={inputCls}
-                        />
+                        <label className={labelCls}>Check-Out</label>
+                        <div className={smallInputWrap}>
+                          <Calendar className={iconCls} aria-hidden="true" />
+                          <input
+                            type="date"
+                            value={checkOut}
+                            onChange={(e) => {
+                              setCheckOut(e.target.value)
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
+                        </div>
                       </div>
                     </div>
 
                     {dateError && (
-                      <p className="text-[13px] font-serif text-red-700 mt-3">
+                      <p className="text-[11px] font-serif text-red-700 -mt-1">
                         {dateError}
                       </p>
                     )}
-                  </div>
 
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Users className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Ospiti
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className={labelCls}>Adulti</label>
-                        <div className={iconWrap}>
+                        <div className={smallInputWrap}>
                           <Users className={iconCls} aria-hidden="true" />
                           <input
                             type="number"
@@ -335,16 +256,14 @@ export function BookingCTA() {
 
                       <div>
                         <label className={labelCls}>Ragazzi</label>
-                        <div className={iconWrap}>
+                        <div className={smallInputWrap}>
                           <Users className={iconCls} aria-hidden="true" />
                           <input
                             type="number"
                             min={0}
                             value={children}
                             onChange={(e) => {
-                              const v = Math.max(0, Number(e.target.value || 0))
-                              setChildren(v)
-                              if (v === 0) setChildrenAges('')
+                              setChildren(Math.max(0, Number(e.target.value || 0)))
                               resetFeedback()
                             }}
                             className={inputCls}
@@ -353,230 +272,124 @@ export function BookingCTA() {
                       </div>
                     </div>
 
-                    {children > 0 && (
-                      <div className="mt-4">
-                        <label className={labelCls}>Età ragazzi</label>
-                        <input
-                          type="text"
-                          value={childrenAges}
-                          onChange={(e) => {
-                            setChildrenAges(e.target.value)
-                            resetFeedback()
-                          }}
-                          placeholder="Es. 3, 7"
-                          className={inputCls}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Mail className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Contatti
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className={labelCls}>Nome e Cognome</label>
-                        <input
-                          type="text"
-                          value={fullName}
-                          onChange={(e) => {
-                            setFullName(e.target.value)
-                            resetFeedback()
-                          }}
-                          placeholder="Mario Rossi"
-                          className={inputCls}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelCls}>Cellulare</label>
-                          <div className={iconWrap}>
-                            <Phone className={iconCls} aria-hidden="true" />
-                            <input
-                              type="tel"
-                              value={phone}
-                              onChange={(e) => {
-                                setPhone(e.target.value)
-                                resetFeedback()
-                              }}
-                              placeholder="+39 ..."
-                              className={inputCls}
-                              inputMode="tel"
-                            />
-                          </div>
-                          {phone.trim().length > 0 && !isPhoneValid && (
-                            <p className="mt-1 text-[12px] text-red-700 font-serif">
-                              Numero non valido.
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className={labelCls}>Email</label>
-                          <div className={iconWrap}>
-                            <AtSign className={iconCls} aria-hidden="true" />
-                            <input
-                              type="email"
-                              value={email}
-                              onChange={(e) => {
-                                setEmail(e.target.value)
-                                resetFeedback()
-                              }}
-                              placeholder="nome@email.com"
-                              className={inputCls}
-                            />
-                          </div>
-                          {email.trim().length > 0 && !isEmailValid && (
-                            <p className="mt-1 text-[12px] text-red-700 font-serif">
-                              Email non valida.
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <p className="text-[12px] font-serif opacity-70">
-                        Inserisci almeno email o cellulare per essere ricontattato.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <button
-                      type="button"
-                      onClick={() => setShowDiscount((v) => !v)}
-                      className="group inline-flex items-center gap-2 text-sm font-serif underline underline-offset-4 opacity-85 hover:opacity-100"
-                      aria-expanded={showDiscount}
-                    >
-                      <Tag className="w-4 h-4" aria-hidden="true" />
-                      <span>Hai un codice sconto?</span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${
-                          showDiscount ? 'rotate-180' : ''
-                        }`}
-                        aria-hidden="true"
+                    <div>
+                      <label className={labelCls}>Nome Completo</label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => {
+                          setFullName(e.target.value)
+                          resetFeedback()
+                        }}
+                        placeholder="Alessandro Rossi"
+                        className={inputCls}
                       />
-                    </button>
+                    </div>
 
-                    {showDiscount && (
-                      <div className="mt-4">
-                        <label className={labelCls}>Codice sconto</label>
-                        <div className={iconWrap}>
-                          <Tag className={iconCls} aria-hidden="true" />
+                    <div>
+                      <label className={labelCls}>Email / Telefono</label>
+                      <div className="space-y-2">
+                        <div className={smallInputWrap}>
+                          <AtSign className={iconCls} aria-hidden="true" />
                           <input
-                            type="text"
-                            value={discountCode}
+                            type="email"
+                            value={email}
                             onChange={(e) => {
-                              setDiscountCode(e.target.value.toUpperCase())
+                              setEmail(e.target.value)
                               resetFeedback()
                             }}
-                            placeholder="Codice"
+                            placeholder="a.rossi@email.it"
                             className={inputCls}
                           />
                         </div>
-                      </div>
-                    )}
-                  </div>
 
-                  <div className="flex items-center justify-between gap-4 px-1">
-                    <div className="text-[13px] md:text-[14px] font-serif opacity-80">
-                      {nights > 0 ? (
-                        <span>
-                          Soggiorno: <strong>{nights}</strong> notti
-                        </span>
-                      ) : (
-                        <span>Inserisci le date per calcolare il soggiorno.</span>
+                        <div className={smallInputWrap}>
+                          <Phone className={iconCls} aria-hidden="true" />
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                              setPhone(e.target.value)
+                              resetFeedback()
+                            }}
+                            placeholder="+39 347 123 4567"
+                            className={inputCls}
+                            inputMode="tel"
+                          />
+                        </div>
+                      </div>
+
+                      {email.trim().length > 0 && !isEmailValid && (
+                        <p className="mt-1 text-[11px] text-red-700 font-serif">
+                          Email non valida.
+                        </p>
+                      )}
+
+                      {phone.trim().length > 0 && !isPhoneValid && (
+                        <p className="mt-1 text-[11px] text-red-700 font-serif">
+                          Numero non valido.
+                        </p>
                       )}
                     </div>
-                  </div>
 
-                  <div className="mt-2 pt-6 border-t border-[var(--cream)]">
-                    <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setOpen(false)}
-                        className="
-                          group inline-flex items-center justify-center gap-2
-                          min-h-[54px] w-full sm:w-auto
-                          px-6 py-3
-                          rounded-sm border border-[var(--cream)]
-                          bg-transparent text-[var(--brown)]
-                          font-serif text-[16px]
-                          transition-all duration-200
-                          hover:bg-[var(--cream)] hover:shadow-sm
-                          active:scale-[0.99]
-                        "
-                        aria-label="Chiudi il form"
-                      >
-                        <X
-                          className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
-                          aria-hidden="true"
-                        />
-                        <span>Chiudi form</span>
-                      </button>
+                    <div className="flex justify-center pt-1">
+                      <div className="px-4 py-1.5 rounded-full border border-[#d5c6b2] bg-[#efe7da] text-[11px] font-serif uppercase tracking-[0.08em] text-[var(--brown)]">
+                        {nights > 0 ? `Totale: ${nights} notti` : 'Totale: - notti'}
+                      </div>
+                    </div>
 
+                    <div className="pt-1 space-y-2">
                       <button
                         type="button"
                         onClick={sendEmail}
                         disabled={!canSend || !!dateError}
-                        className={`group inline-flex items-center justify-center gap-3
-                          min-h-[54px] w-full sm:w-auto
-                          px-7 py-3
-                          rounded-sm border-2
-                          font-serif text-[17px]
-                          transition-all duration-200 shadow-sm
-                          ${
-                            !canSend || !!dateError
-                              ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
-                              : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-95 hover:shadow-md active:scale-[0.99]'
-                          }`}
-                        aria-label="Invia la richiesta di disponibilità"
+                        className={`group w-full h-[46px] flex items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.08em] transition-all ${
+                          !canSend || !!dateError
+                            ? 'bg-[#c8b19e] text-white/80 cursor-not-allowed'
+                            : 'bg-[var(--sienna)] text-[var(--paper)] hover:opacity-95'
+                        }`}
+                        aria-label="Invia richiesta"
                       >
-                        <Mail
-                          className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-[1px]"
-                          aria-hidden="true"
-                        />
-                        <span>{sending ? 'Invio in corso...' : 'Invia richiesta'}</span>
+                        <Mail className="w-4 h-4" aria-hidden="true" />
+                        <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
+                        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[2px]" aria-hidden="true" />
                       </button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {sentOk === true && (
-                <div className="mt-8 pt-6 border-t border-[var(--cream)] flex justify-center">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="
-                      group inline-flex items-center justify-center gap-3
-                      min-h-[56px]
-                      px-8 py-3
-                      rounded-sm border-2 border-[var(--sienna)]
-                      bg-[var(--sienna)] text-[var(--paper)]
-                      font-serif text-[17px]
-                      shadow-sm transition-all duration-200
-                      hover:opacity-95 hover:shadow-md
-                      active:scale-[0.99]
-                    "
-                    aria-label="Chiudi il form e torna al sito"
-                  >
-                    <X
-                      className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
-                      aria-hidden="true"
-                    />
-                    <span>Chiudi e torna al sito</span>
-                  </button>
-                </div>
-              )}
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 border border-[#d9cbb9] bg-[#f5eee3] text-[var(--brown)] font-serif text-[12px] rounded-full hover:bg-[#efe5d6] transition-colors"
+                          aria-label="Chiudi form"
+                        >
+                          <X className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>Chiudi Form</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {sentOk === true && (
+                  <div className="pt-2 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-[#d9cbb9] bg-[#f5eee3] text-[var(--brown)] font-serif text-[12px] rounded-full hover:bg-[#efe5d6] transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" aria-hidden="true" />
+                      <span>Chiudi Form</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
+
+        <p className="mt-8 text-center text-sm opacity-65 font-serif tracking-wide">
+          Best Price Guaranteed • Minimum stay 3 nights
+        </p>
       </div>
     </section>
   )

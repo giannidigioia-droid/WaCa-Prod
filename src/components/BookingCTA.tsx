@@ -1,15 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import emailjs from '@emailjs/browser'
-import { OliveBranch } from './DecorativeElements'
 import {
   Calendar,
   Mail,
-  Users,
   Phone,
   AtSign,
   X,
-  Tag,
-  ChevronDown,
+  ArrowRight,
 } from 'lucide-react'
 
 const EMAILJS_SERVICE_ID = 'service_udnxwt2'
@@ -38,8 +35,72 @@ function gtag_report_conversion() {
   return false
 }
 
+function BookingSeal({ shellBg = '#f7f1e7', terracotta = '#b0663b' }) {
+  return (
+    <div
+      className="h-[68px] w-[68px] rounded-full flex items-center justify-center"
+      style={{
+        background: terracotta,
+        border: `4px solid ${shellBg}`,
+        boxShadow: '0 6px 14px rgba(97, 54, 29, 0.18)',
+      }}
+      aria-label="Prenotazione diretta"
+      title="Prenotazione diretta"
+    >
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <circle cx="32" cy="32" r="21" stroke="#F8EFE3" strokeWidth="1.6" opacity="0.9" />
+        <path
+          d="M22 26.5H42"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M25 22.5V28"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M39 22.5V28"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <rect
+          x="22"
+          y="26"
+          width="20"
+          height="16"
+          rx="2.5"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+        />
+        <path
+          d="M28 35L31 38L37 31.5"
+          stroke="#F8EFE3"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M32 14.5L33.8 18.2L37.9 18.8L34.9 21.7L35.6 25.8L32 23.9L28.4 25.8L29.1 21.7L26.1 18.8L30.2 18.2L32 14.5Z"
+          fill="#F8EFE3"
+          opacity="0.92"
+        />
+      </svg>
+    </div>
+  )
+}
+
 export function BookingCTA() {
-  const [open, setOpen] = useState(false)
   const [sending, setSending] = useState(false)
   const [sentOk, setSentOk] = useState<null | boolean>(null)
   const [errorMsg, setErrorMsg] = useState('')
@@ -48,22 +109,9 @@ export function BookingCTA() {
   const [checkOut, setCheckOut] = useState('')
   const [adults, setAdults] = useState<number>(2)
   const [children, setChildren] = useState<number>(0)
-  const [childrenAges, setChildrenAges] = useState('')
   const [fullName, setFullName] = useState('')
-  const [discountCode, setDiscountCode] = useState('')
-  const [showDiscount, setShowDiscount] = useState(false)
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-
-  const formRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open || !formRef.current) return
-    const timer = setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 120)
-    return () => clearTimeout(timer)
-  }, [open])
 
   const isEmailValid =
     email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
@@ -93,7 +141,6 @@ export function BookingCTA() {
     !dateError &&
     adults >= 1 &&
     children >= 0 &&
-    (children === 0 || childrenAges.trim().length > 0) &&
     fullName.trim().length > 1 &&
     hasAtLeastOneContact &&
     !sending
@@ -108,15 +155,11 @@ export function BookingCTA() {
     setCheckOut('')
     setAdults(2)
     setChildren(0)
-    setChildrenAges('')
     setFullName('')
-    setDiscountCode('')
-    setShowDiscount(false)
     setEmail('')
     setPhone('')
     setSentOk(null)
     setErrorMsg('')
-    setOpen(false)
   }
 
   const sendEmail = async () => {
@@ -136,13 +179,11 @@ export function BookingCTA() {
       const templateParams = {
         title: 'Richiesta disponibilità WaCa',
         name: fullName.trim() || 'Ospite WaCa',
-        discount_code: discountCode.trim() || '-',
         checkin: checkIn,
         checkout: checkOut,
         nights: String(nights),
         adults: String(adults),
         children: String(children),
-        ages: children > 0 ? childrenAges.trim() : '-',
         email: email.trim() || '-',
         phone: phone.trim() || '-',
       }
@@ -166,160 +207,130 @@ export function BookingCTA() {
     }
   }
 
-  const labelCls = 'block text-[12px] font-serif mb-1.5 opacity-80 text-left'
+  const shellBg = '#f7f1e7'
+  const terracotta = '#b0663b'
   const inputCls =
-    'w-full min-h-[50px] border border-[var(--cream)] bg-white px-4 py-3 font-serif text-[16px] leading-tight rounded-sm text-[var(--brown)] placeholder:text-[var(--brown)]/45 focus:outline-none focus:ring-2 focus:ring-[var(--sienna)]/20'
-  const iconWrap = 'flex items-center gap-2'
-  const iconCls = 'w-5 h-5 opacity-55 shrink-0'
-  const sectionCard =
-    'bg-[var(--paper)] text-[var(--brown)] shadow-[0_12px_40px_rgba(0,0,0,0.08)] rounded-sm'
-  const softPanel = 'border border-[var(--cream)]/80 bg-white/40 rounded-sm'
+    'w-full h-[44px] border border-[#ebdfd0] bg-[#f9f4ec] px-3 text-[15px] text-[#8b8177] font-serif outline-none focus:border-[#bb8a63] focus:ring-1 focus:ring-[#bb8a63]'
+  const labelCls =
+    'block text-[10px] uppercase tracking-[0.04em] mb-1 text-[#b9aa98] font-serif'
+  const thinBorder = 'border border-[rgba(216,197,176,0.85)]'
 
   return (
     <section
       id="booking"
-      className="py-24 px-4 bg-[var(--sienna)] relative overflow-hidden text-[var(--paper)] scroll-mt-24"
+      className="relative overflow-hidden px-4 py-14 md:py-20"
+      style={{
+        background:
+          'linear-gradient(135deg, #a85d36 0%, #b56a3e 50%, #9b542f 100%)',
+      }}
     >
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <OliveBranch className="w-full h-full object-cover text-white transform scale-150 opacity-20" />
-      </div>
-
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="font-script text-5xl md:text-7xl mb-6 text-[var(--cream)]">
-          Prenota il Tuo Soggiorno
-        </h2>
-
-        <p className="font-serif text-2xl md:text-3xl mb-8 text-[var(--paper)] opacity-90">
-          Book Your Stay in Puglia
-        </p>
-
-        {!open && (
-          <>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed opacity-90">
-              Inserisci pochi dettagli essenziali: ti risponderemo con disponibilità e
-              miglior tariffa garantita.
-            </p>
-
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  resetFeedback()
-                  setOpen(true)
-                }}
-                className="group min-h-[56px] border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all duration-200 active:scale-[0.99]"
-              >
-                <Calendar className="w-6 h-6 transition-transform duration-200 group-hover:translate-y-[-1px]" aria-hidden="true" />
-                <span>Check Availability</span>
-              </button>
-            </div>
-
-            <p className="mt-8 text-sm opacity-60 font-serif uppercase tracking-widest">
-              Minimum stay: 3 nights • Best Price Guaranteed
-            </p>
-          </>
-        )}
-
-        {open && (
+      <div className="mx-auto max-w-[430px]">
+        <div className="relative px-[10px] pt-4 pb-[10px]">
           <div
-            ref={formRef}
-            className={`mt-8 max-w-2xl mx-auto text-left ${sectionCard}`}
-          >
-            <div className="px-5 py-4 md:px-7 md:py-5 border-b border-[var(--cream)] flex items-center justify-between gap-4">
-              <div>
-                <h3 className="font-serif text-xl md:text-2xl font-semibold">
-                  Richiesta disponibilità
-                </h3>
-                <p className="font-serif text-[13px] md:text-[14px] opacity-70">
-                  Compila e invia in meno di 1 minuto
-                </p>
-              </div>
+            className="absolute inset-y-[6px] left-[14px] right-0"
+            style={{
+              background: '#eadfce',
+              border: '1px solid rgba(233,220,205,0.8)',
+            }}
+          />
 
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="group inline-flex items-center justify-center min-w-[48px] min-h-[48px] border border-[var(--cream)] rounded-sm hover:bg-[var(--cream)]/70 transition-all duration-200"
-                aria-label="Chiudi il form"
-              >
-                <X className="w-5 h-5 transition-transform duration-200 group-hover:rotate-90" aria-hidden="true" />
-              </button>
+          <div
+            className="absolute inset-y-[3px] left-[7px] right-[7px]"
+            style={{
+              background: '#efe4d4',
+              border: '1px solid rgba(228,212,194,0.9)',
+            }}
+          />
+
+          <div
+            className="relative"
+            style={{
+              background: shellBg,
+              border: '1px solid #e8dccd',
+              boxShadow: '0 18px 40px rgba(78, 39, 18, 0.18)',
+            }}
+          >
+            <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-20">
+              <BookingSeal shellBg={shellBg} terracotta={terracotta} />
             </div>
 
-            <div className="p-5 md:p-7">
-              {(sentOk === true || sentOk === false || errorMsg) && (
-                <div
-                  className={`mb-6 p-4 border font-serif text-[14px] leading-snug rounded-sm ${
-                    sentOk
-                      ? 'border-green-300 bg-green-50 text-green-900'
-                      : 'border-red-200 bg-red-50 text-red-900'
-                  }`}
-                >
-                  {sentOk === true && (
-                    <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
-                  )}
-                  {sentOk === false && <div>❌ {errorMsg}</div>}
-                  {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
+            <div className="p-3 pt-8 md:p-4 md:pt-9">
+              <div className={`relative p-3 md:p-4 ${thinBorder}`}>
+                <div className="pointer-events-none absolute inset-0 opacity-[0.22]">
+                  <div className="absolute left-2 top-2 h-7 w-7 border-l border-t border-[#e6d8c7]" />
+                  <div className="absolute right-2 top-2 h-7 w-7 border-r border-t border-[#e6d8c7]" />
+                  <div className="absolute left-2 bottom-2 h-7 w-7 border-l border-b border-[#e6d8c7]" />
+                  <div className="absolute right-2 bottom-2 h-7 w-7 border-r border-b border-[#e6d8c7]" />
                 </div>
-              )}
 
-              {sentOk !== true && (
-                <div className="space-y-6">
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Calendar className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Date del soggiorno
-                      </p>
+                <div className="relative z-10">
+                  {(sentOk === true || sentOk === false || errorMsg) && (
+                    <div
+                      className={`mb-3 p-2 text-[12px] font-serif leading-snug border ${
+                        sentOk
+                          ? 'border-green-300 bg-green-50 text-green-900'
+                          : 'border-red-200 bg-red-50 text-red-900'
+                      }`}
+                    >
+                      {sentOk === true && (
+                        <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
+                      )}
+                      {sentOk === false && <div>❌ {errorMsg}</div>}
+                      {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
                     </div>
+                  )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className={labelCls}>Check-in</label>
-                        <input
-                          type="date"
-                          value={checkIn}
-                          onChange={(e) => {
-                            setCheckIn(e.target.value)
-                            resetFeedback()
-                          }}
-                          className={inputCls}
-                        />
+                  {sentOk !== true && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelCls}>Check-In</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={checkIn}
+                              onChange={(e) => {
+                                setCheckIn(e.target.value)
+                                resetFeedback()
+                              }}
+                              className={`${inputCls} pr-9`}
+                            />
+                            <Calendar
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Check-Out</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={checkOut}
+                              onChange={(e) => {
+                                setCheckOut(e.target.value)
+                                resetFeedback()
+                              }}
+                              className={`${inputCls} pr-9`}
+                            />
+                            <Calendar
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
+                          </div>
+                        </div>
                       </div>
 
-                      <div>
-                        <label className={labelCls}>Check-out</label>
-                        <input
-                          type="date"
-                          value={checkOut}
-                          onChange={(e) => {
-                            setCheckOut(e.target.value)
-                            resetFeedback()
-                          }}
-                          className={inputCls}
-                        />
-                      </div>
-                    </div>
+                      {dateError && (
+                        <p className="mt-2 text-[11px] font-serif text-red-700">
+                          {dateError}
+                        </p>
+                      )}
 
-                    {dateError && (
-                      <p className="text-[13px] font-serif text-red-700 mt-3">
-                        {dateError}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Users className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Ospiti
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className={labelCls}>Adulti</label>
-                        <div className={iconWrap}>
-                          <Users className={iconCls} aria-hidden="true" />
+                      <div className="mt-4 grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelCls}>Adulti</label>
                           <input
                             type="number"
                             min={1}
@@ -331,56 +342,24 @@ export function BookingCTA() {
                             className={inputCls}
                           />
                         </div>
-                      </div>
 
-                      <div>
-                        <label className={labelCls}>Ragazzi</label>
-                        <div className={iconWrap}>
-                          <Users className={iconCls} aria-hidden="true" />
+                        <div>
+                          <label className={labelCls}>Ragazzi</label>
                           <input
                             type="number"
                             min={0}
                             value={children}
                             onChange={(e) => {
-                              const v = Math.max(0, Number(e.target.value || 0))
-                              setChildren(v)
-                              if (v === 0) setChildrenAges('')
+                              setChildren(Math.max(0, Number(e.target.value || 0)))
                               resetFeedback()
                             }}
                             className={inputCls}
                           />
                         </div>
                       </div>
-                    </div>
 
-                    {children > 0 && (
                       <div className="mt-4">
-                        <label className={labelCls}>Età ragazzi</label>
-                        <input
-                          type="text"
-                          value={childrenAges}
-                          onChange={(e) => {
-                            setChildrenAges(e.target.value)
-                            resetFeedback()
-                          }}
-                          placeholder="Es. 3, 7"
-                          className={inputCls}
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Mail className="w-4 h-4 opacity-60" aria-hidden="true" />
-                      <p className="font-serif text-sm uppercase tracking-wide opacity-70">
-                        Contatti
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <label className={labelCls}>Nome e Cognome</label>
+                        <label className={labelCls}>Nome Completo</label>
                         <input
                           type="text"
                           value={fullName}
@@ -388,39 +367,20 @@ export function BookingCTA() {
                             setFullName(e.target.value)
                             resetFeedback()
                           }}
-                          placeholder="Mario Rossi"
+                          placeholder="Alessandro Rossi"
                           className={inputCls}
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className={labelCls}>Cellulare</label>
-                          <div className={iconWrap}>
-                            <Phone className={iconCls} aria-hidden="true" />
-                            <input
-                              type="tel"
-                              value={phone}
-                              onChange={(e) => {
-                                setPhone(e.target.value)
-                                resetFeedback()
-                              }}
-                              placeholder="+39 ..."
-                              className={inputCls}
-                              inputMode="tel"
-                            />
-                          </div>
-                          {phone.trim().length > 0 && !isPhoneValid && (
-                            <p className="mt-1 text-[12px] text-red-700 font-serif">
-                              Numero non valido.
-                            </p>
-                          )}
-                        </div>
+                      <div className="mt-4">
+                        <label className={labelCls}>Email / Telefono</label>
 
-                        <div>
-                          <label className={labelCls}>Email</label>
-                          <div className={iconWrap}>
-                            <AtSign className={iconCls} aria-hidden="true" />
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <AtSign
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
                             <input
                               type="email"
                               value={email}
@@ -428,155 +388,118 @@ export function BookingCTA() {
                                 setEmail(e.target.value)
                                 resetFeedback()
                               }}
-                              placeholder="nome@email.com"
-                              className={inputCls}
+                              placeholder="a.rossi@email.it"
+                              className={`${inputCls} pl-10`}
                             />
                           </div>
-                          {email.trim().length > 0 && !isEmailValid && (
-                            <p className="mt-1 text-[12px] text-red-700 font-serif">
-                              Email non valida.
-                            </p>
-                          )}
+
+                          <div className="relative">
+                            <Phone
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
+                            <input
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => {
+                                setPhone(e.target.value)
+                                resetFeedback()
+                              }}
+                              placeholder="+39 347 123 4567"
+                              className={`${inputCls} pl-10`}
+                              inputMode="tel"
+                            />
+                          </div>
+                        </div>
+
+                        {email.trim().length > 0 && !isEmailValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif">
+                            Email non valida.
+                          </p>
+                        )}
+
+                        {phone.trim().length > 0 && !isPhoneValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif">
+                            Numero non valido.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="mt-5 flex justify-center">
+                        <div
+                          className="rounded-full px-5 py-2 font-serif text-[12px] uppercase tracking-[0.06em] text-[#7f7060]"
+                          style={{
+                            background: '#f6efe6',
+                            border: '1px solid #d8ccbc',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)',
+                          }}
+                        >
+                          {nights > 0 ? `Totale: ${nights} notti` : 'Totale: - notti'}
                         </div>
                       </div>
 
-                      <p className="text-[12px] font-serif opacity-70">
-                        Inserisci almeno email o cellulare per essere ricontattato.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className={`p-4 md:p-5 ${softPanel}`}>
-                    <button
-                      type="button"
-                      onClick={() => setShowDiscount((v) => !v)}
-                      className="group inline-flex items-center gap-2 text-sm font-serif underline underline-offset-4 opacity-85 hover:opacity-100"
-                      aria-expanded={showDiscount}
-                    >
-                      <Tag className="w-4 h-4" aria-hidden="true" />
-                      <span>Hai un codice sconto?</span>
-                      <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${
-                          showDiscount ? 'rotate-180' : ''
-                        }`}
-                        aria-hidden="true"
-                      />
-                    </button>
-
-                    {showDiscount && (
-                      <div className="mt-4">
-                        <label className={labelCls}>Codice sconto</label>
-                        <div className={iconWrap}>
-                          <Tag className={iconCls} aria-hidden="true" />
-                          <input
-                            type="text"
-                            value={discountCode}
-                            onChange={(e) => {
-                              setDiscountCode(e.target.value.toUpperCase())
-                              resetFeedback()
-                            }}
-                            placeholder="Codice"
-                            className={inputCls}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between gap-4 px-1">
-                    <div className="text-[13px] md:text-[14px] font-serif opacity-80">
-                      {nights > 0 ? (
-                        <span>
-                          Soggiorno: <strong>{nights}</strong> notti
-                        </span>
-                      ) : (
-                        <span>Inserisci le date per calcolare il soggiorno.</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-2 pt-6 border-t border-[var(--cream)]">
-                    <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setOpen(false)}
-                        className="
-                          group inline-flex items-center justify-center gap-2
-                          min-h-[54px] w-full sm:w-auto
-                          px-6 py-3
-                          rounded-sm border border-[var(--cream)]
-                          bg-transparent text-[var(--brown)]
-                          font-serif text-[16px]
-                          transition-all duration-200
-                          hover:bg-[var(--cream)] hover:shadow-sm
-                          active:scale-[0.99]
-                        "
-                        aria-label="Chiudi il form"
-                      >
-                        <X
-                          className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
-                          aria-hidden="true"
-                        />
-                        <span>Chiudi form</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={sendEmail}
-                        disabled={!canSend || !!dateError}
-                        className={`group inline-flex items-center justify-center gap-3
-                          min-h-[54px] w-full sm:w-auto
-                          px-7 py-3
-                          rounded-sm border-2
-                          font-serif text-[17px]
-                          transition-all duration-200 shadow-sm
-                          ${
+                      <div className="mt-5">
+                        <button
+                          type="button"
+                          onClick={sendEmail}
+                          disabled={!canSend || !!dateError}
+                          className={`group flex h-[48px] w-full items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.06em] transition-all ${
                             !canSend || !!dateError
-                              ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
-                              : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-95 hover:shadow-md active:scale-[0.99]'
+                              ? 'cursor-not-allowed bg-[#ccb6a5] text-white/80'
+                              : 'bg-[#ccb4a2] text-[#f8f1e8] hover:brightness-[0.98]'
                           }`}
-                        aria-label="Invia la richiesta di disponibilità"
+                          aria-label="Invia richiesta"
+                        >
+                          <Mail className="w-4 h-4" aria-hidden="true" />
+                          <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
+                          <ArrowRight
+                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[2px]"
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+
+                      <div className="mt-3 flex justify-center">
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-serif text-[12px] text-[#7d6e60] transition-colors hover:bg-[#f4ebde]"
+                          style={{
+                            border: '1px solid #d9ccbc',
+                            background: '#fbf6ef',
+                            boxShadow: '0 1px 2px rgba(101, 73, 48, 0.05)',
+                          }}
+                          aria-label="Chiudi form"
+                        >
+                          <X className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>Chiudi Form</span>
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {sentOk === true && (
+                    <div className="pt-2 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-serif text-[12px] text-[#7d6e60] transition-colors hover:bg-[#f4ebde]"
+                        style={{
+                          border: '1px solid #d9ccbc',
+                          background: '#fbf6ef',
+                        }}
+                        aria-label="Chiudi form"
                       >
-                        <Mail
-                          className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-[1px]"
-                          aria-hidden="true"
-                        />
-                        <span>{sending ? 'Invio in corso...' : 'Invia richiesta'}</span>
+                        <X className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Chiudi Form</span>
                       </button>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-
-              {sentOk === true && (
-                <div className="mt-8 pt-6 border-t border-[var(--cream)] flex justify-center">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="
-                      group inline-flex items-center justify-center gap-3
-                      min-h-[56px]
-                      px-8 py-3
-                      rounded-sm border-2 border-[var(--sienna)]
-                      bg-[var(--sienna)] text-[var(--paper)]
-                      font-serif text-[17px]
-                      shadow-sm transition-all duration-200
-                      hover:opacity-95 hover:shadow-md
-                      active:scale-[0.99]
-                    "
-                    aria-label="Chiudi il form e torna al sito"
-                  >
-                    <X
-                      className="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
-                      aria-hidden="true"
-                    />
-                    <span>Chiudi e torna al sito</span>
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   )

@@ -3,7 +3,6 @@ import emailjs from '@emailjs/browser'
 import {
   Calendar,
   Mail,
-  Users,
   Phone,
   AtSign,
   X,
@@ -34,6 +33,71 @@ function gtag_report_conversion() {
     // never block UX
   }
   return false
+}
+
+function BookingSeal({ shellBg = '#f7f1e7', terracotta = '#b0663b' }) {
+  return (
+    <div
+      className="h-[68px] w-[68px] rounded-full flex items-center justify-center"
+      style={{
+        background: terracotta,
+        border: `4px solid ${shellBg}`,
+        boxShadow: '0 6px 14px rgba(97, 54, 29, 0.18)',
+      }}
+      aria-label="Prenotazione diretta"
+      title="Prenotazione diretta"
+    >
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <circle cx="32" cy="32" r="21" stroke="#F8EFE3" strokeWidth="1.6" opacity="0.9" />
+        <path
+          d="M22 26.5H42"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M25 22.5V28"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M39 22.5V28"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <rect
+          x="22"
+          y="26"
+          width="20"
+          height="16"
+          rx="2.5"
+          stroke="#F8EFE3"
+          strokeWidth="1.8"
+        />
+        <path
+          d="M28 35L31 38L37 31.5"
+          stroke="#F8EFE3"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M32 14.5L33.8 18.2L37.9 18.8L34.9 21.7L35.6 25.8L32 23.9L28.4 25.8L29.1 21.7L26.1 18.8L30.2 18.2L32 14.5Z"
+          fill="#F8EFE3"
+          opacity="0.92"
+        />
+      </svg>
+    </div>
+  )
 }
 
 export function BookingCTA() {
@@ -143,14 +207,13 @@ export function BookingCTA() {
     }
   }
 
-  const labelCls =
-    'block text-[10px] uppercase tracking-[0.04em] mb-1 text-[#e9ddd0] font-serif'
-  const inputCls =
-    'w-full h-[44px] border border-[#ebdfd0] bg-[#f9f4ec] px-3 text-[15px] text-[#8b8177] font-serif shadow-none outline-none focus:border-[#bb8a63] focus:ring-1 focus:ring-[#bb8a63]'
-  const iconCls = 'w-4 h-4 text-[#efe5da] opacity-90 shrink-0'
-  const thinBorder = 'border border-[rgba(216,197,176,0.85)]'
   const shellBg = '#f7f1e7'
   const terracotta = '#b0663b'
+  const inputCls =
+    'w-full h-[44px] border border-[#ebdfd0] bg-[#f9f4ec] px-3 text-[15px] text-[#8b8177] font-serif outline-none focus:border-[#bb8a63] focus:ring-1 focus:ring-[#bb8a63]'
+  const labelCls =
+    'block text-[10px] uppercase tracking-[0.04em] mb-1 text-[#b9aa98] font-serif'
+  const thinBorder = 'border border-[rgba(216,197,176,0.85)]'
 
   return (
     <section
@@ -188,21 +251,7 @@ export function BookingCTA() {
             }}
           >
             <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-20">
-              <div
-                className="h-[62px] w-[62px] rounded-full flex items-center justify-center text-center"
-                style={{
-                  background: terracotta,
-                  color: '#f8efe3',
-                  border: `4px solid ${shellBg}`,
-                  boxShadow: '0 6px 14px rgba(97, 54, 29, 0.18)',
-                }}
-              >
-                <div className="font-serif uppercase leading-[1.05] tracking-[0.08em] text-[10px]">
-                  Direct
-                  <br />
-                  Booking
-                </div>
-              </div>
+              <BookingSeal shellBg={shellBg} terracotta={terracotta} />
             </div>
 
             <div className="p-3 pt-8 md:p-4 md:pt-9">
@@ -282,34 +331,30 @@ export function BookingCTA() {
                       <div className="mt-4 grid grid-cols-2 gap-4">
                         <div>
                           <label className={labelCls}>Adulti</label>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              min={1}
-                              value={adults}
-                              onChange={(e) => {
-                                setAdults(Math.max(1, Number(e.target.value || 1)))
-                                resetFeedback()
-                              }}
-                              className={inputCls}
-                            />
-                          </div>
+                          <input
+                            type="number"
+                            min={1}
+                            value={adults}
+                            onChange={(e) => {
+                              setAdults(Math.max(1, Number(e.target.value || 1)))
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
                         </div>
 
                         <div>
                           <label className={labelCls}>Ragazzi</label>
-                          <div className="relative">
-                            <input
-                              type="number"
-                              min={0}
-                              value={children}
-                              onChange={(e) => {
-                                setChildren(Math.max(0, Number(e.target.value || 0)))
-                                resetFeedback()
-                              }}
-                              className={inputCls}
-                            />
-                          </div>
+                          <input
+                            type="number"
+                            min={0}
+                            value={children}
+                            onChange={(e) => {
+                              setChildren(Math.max(0, Number(e.target.value || 0)))
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
                         </div>
                       </div>
 
@@ -333,7 +378,7 @@ export function BookingCTA() {
                         <div className="space-y-3">
                           <div className="relative">
                             <AtSign
-                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#efe5da]"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
                               aria-hidden="true"
                             />
                             <input
@@ -350,7 +395,7 @@ export function BookingCTA() {
 
                           <div className="relative">
                             <Phone
-                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#efe5da]"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
                               aria-hidden="true"
                             />
                             <input
@@ -443,6 +488,7 @@ export function BookingCTA() {
                           border: '1px solid #d9ccbc',
                           background: '#fbf6ef',
                         }}
+                        aria-label="Chiudi form"
                       >
                         <X className="w-3.5 h-3.5" aria-hidden="true" />
                         <span>Chiudi Form</span>

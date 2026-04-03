@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
 import emailjs from '@emailjs/browser'
 import { OliveBranch } from './DecorativeElements'
 import { Calendar, Mail, Users, Phone, AtSign, X, Tag } from 'lucide-react'
@@ -11,28 +11,21 @@ const GOOGLE_ADS_SEND_TO = 'AW-17975995747/pl2CCPyc1f4bEOPaz_tC'
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void
-    visualViewport?: VisualViewport
   }
 }
 
-function gtag_report_conversion(url?: string) {
-  const callback = function () {
-    if (typeof url !== 'undefined') window.location.href = url
-  }
-
+function gtag_report_conversion() {
   try {
     if (window.gtag) {
       window.gtag('event', 'conversion', {
         send_to: GOOGLE_ADS_SEND_TO,
         value: 1.0,
         currency: 'EUR',
-        event_callback: callback,
       })
     }
   } catch {
     // never block UX
   }
-
   return false
 }
 
@@ -53,70 +46,22 @@ export function BookingCTA() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
 
+  const formRef = useRef<HTMLDivElement>(null)
+
+  // Scrolla dolcemente al form quando viene aperto
   useEffect(() => {
-    if (!open) return
-
-    const root = document.documentElement
-    const vv = window.visualViewport
-    const scrollY = window.scrollY
-
-    const previousHtmlOverflow = root.style.overflow
-    const previousBodyOverflow = document.body.style.overflow
-    const previousBodyPosition = document.body.style.position
-    const previousBodyTop = document.body.style.top
-    const previousBodyWidth = document.body.style.width
-
-    const updateViewportVars = () => {
-      const height = vv?.height ?? window.innerHeight
-      const offsetTop = vv?.offsetTop ?? 0
-      const keyboardInset = Math.max(0, window.innerHeight - height - offsetTop)
-
-      root.style.setProperty('--vvh', `${height}px`)
-      root.style.setProperty('--vv-top', `${offsetTop}px`)
-      root.style.setProperty('--kb-offset', `${keyboardInset}px`)
-    }
-
-    updateViewportVars()
-
-    root.style.overflow = 'hidden'
-    document.body.style.overflow = 'hidden'
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
-
-    window.addEventListener('resize', updateViewportVars)
-    window.addEventListener('orientationchange', updateViewportVars)
-    vv?.addEventListener('resize', updateViewportVars)
-    vv?.addEventListener('scroll', updateViewportVars)
-
-    return () => {
-      root.style.overflow = previousHtmlOverflow
-      document.body.style.overflow = previousBodyOverflow
-      document.body.style.position = previousBodyPosition
-      document.body.style.top = previousBodyTop
-      document.body.style.width = previousBodyWidth
-
-      root.style.removeProperty('--vvh')
-      root.style.removeProperty('--vv-top')
-      root.style.removeProperty('--kb-offset')
-
-      window.removeEventListener('resize', updateViewportVars)
-      window.removeEventListener('orientationchange', updateViewportVars)
-      vv?.removeEventListener('resize', updateViewportVars)
-      vv?.removeEventListener('scroll', updateViewportVars)
-
-      window.scrollTo(0, scrollY)
+    if (open && formRef.current) {
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
     }
   }, [open])
 
-  const isEmailValid =
-    email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-
+  const isEmailValid = email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
   const isPhoneValid = phone.trim().length === 0 || phone.trim().length >= 6
 
   const hasAtLeastOneContact =
-    (email.trim().length > 0 && isEmailValid) ||
-    (phone.trim().length > 0 && isPhoneValid)
+    (email.trim().length > 0 && isEmailValid) || (phone.trim().length > 0 && isPhoneValid)
 
   const dateError = useMemo(() => {
     if (!checkIn || !checkOut) return ''
@@ -146,15 +91,28 @@ export function BookingCTA() {
     setErrorMsg('')
   }
 
-  const closeModal = () => setOpen(false)
+  const resetForm = () => {
+    setCheckIn('')
+    setCheckOut('')
+    setAdults(2)
+    setChildren(0)
+    setChildrenAges('')
+    setFullName('')
+    setDiscountCode('')
+    setShowDiscount(false)
+    setEmail('')
+    setPhone('')
+    setSentOk(null)
+    setErrorMsg('')
+    setOpen(false)
+  }
 
   const sendEmail = async () => {
     resetFeedback()
 
     if (!canSend) {
       setErrorMsg(
-        dateError ||
-          'Compila nome, date, ospiti e almeno un contatto valido tra email e cellulare.'
+        dateError || 'Compila nome, date, ospiti e almeno un contatto valido tra email e cellulare.'
       )
       return
     }
@@ -176,30 +134,25 @@ export function BookingCTA() {
         phone: phone.trim() || '-',
       }
 
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        EMAILJS_PUBLIC_KEY
-      )
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
 
       gtag_report_conversion()
       setSentOk(true)
     } catch {
       setSentOk(false)
       setErrorMsg(
-        'Si è verificato un problema temporaneo nell’invio della richiesta. Ti consigliamo di contattarci via WhatsApp nella sezione Contact Us.'
+        'Si è verificato un problema temporaneo nell’invio. Ti consigliamo di contattarci via WhatsApp nella sezione Contact Us.'
       )
     } finally {
       setSending(false)
     }
   }
 
-  const labelCls = 'block text-[11px] font-serif mb-1 opacity-80'
+  const labelCls = 'block text-[12px] font-serif mb-1.5 opacity-80 text-left'
   const inputCls =
-    'w-full min-h-[44px] border border-[var(--cream)] bg-white px-3 py-2 font-serif text-base leading-tight rounded-sm'
+    'w-full min-h-[48px] border border-[var(--cream)] bg-white px-3 py-2 font-serif text-[16px] leading-tight rounded-sm text-[var(--brown)]'
   const iconWrap = 'flex items-center gap-2'
-  const iconCls = 'w-4 h-4 opacity-60 shrink-0'
+  const iconCls = 'w-5 h-5 opacity-60 shrink-0'
 
   return (
     <section
@@ -219,327 +172,293 @@ export function BookingCTA() {
           Book Your Stay in Puglia
         </p>
 
-        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed opacity-90">
-          Inserisci pochi dettagli essenziali: ti risponderemo con disponibilità e
-          miglior tariffa garantita.
-        </p>
+        {!open && (
+          <>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed opacity-90">
+              Inserisci pochi dettagli essenziali: ti risponderemo con disponibilità e miglior tariffa
+              garantita.
+            </p>
 
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              resetFeedback()
-              setOpen(true)
-            }}
-            className="min-h-[52px] border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all"
-          >
-            <Calendar className="w-6 h-6" />
-            <span>Check Availability</span>
-          </button>
-        </div>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  resetFeedback()
+                  setOpen(true)
+                }}
+                className="min-h-[52px] border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all"
+              >
+                <Calendar className="w-6 h-6" />
+                <span>Check Availability</span>
+              </button>
+            </div>
+            
+            <p className="mt-8 text-sm opacity-60 font-serif uppercase tracking-widest">
+              Minimum stay: 3 nights • Best Price Guaranteed
+            </p>
+          </>
+        )}
 
-        <p className="mt-8 text-sm opacity-60 font-serif uppercase tracking-widest">
-          Minimum stay: 3 nights • Best Price Guaranteed
-        </p>
-
+        {/* INLINE FORM (Sostituisce il modal) */}
         {open && (
           <div
-            className="fixed inset-0 z-[9999]"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="booking-modal-title"
-            style={{
-              top: 'var(--vv-top, 0px)',
-              height: 'var(--vvh, 100vh)',
-            }}
+            ref={formRef}
+            className="mt-8 bg-[var(--paper)] text-[var(--brown)] shadow-2xl rounded-sm max-w-2xl mx-auto text-left"
           >
-            <div className="absolute inset-0 bg-black/55" onClick={closeModal} />
-
-            <div className="absolute inset-0 md:flex md:items-center md:justify-center md:p-4">
-              <div
-                className="
-                  absolute inset-x-0 top-0 bottom-0
-                  md:relative md:inset-auto md:w-full md:max-w-md
-                  bg-[var(--paper)] text-[var(--brown)]
-                  md:border md:border-[var(--cream)] md:shadow-2xl
-                  rounded-none md:rounded-sm
-                  flex flex-col overflow-hidden
-                "
-                style={{
-                  height: '100%',
-                  paddingTop: 'max(12px, env(safe-area-inset-top))',
-                }}
+            <div className="px-5 py-4 border-b border-[var(--cream)] flex items-center justify-between">
+              <div>
+                <h3 className="font-serif text-xl font-semibold">Richiesta disponibilità</h3>
+                <p className="font-serif text-[13px] opacity-70">Compila e invia in meno di 1 minuto</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="p-2 border border-[var(--cream)] rounded hover:bg-[var(--cream)] transition-colors"
+                aria-label="Annulla"
               >
-                <div className="px-4 py-3 border-b border-[var(--cream)] bg-[var(--paper)] flex items-center justify-between gap-3 shrink-0">
-                  <div className="text-left min-w-0">
-                    <div id="booking-modal-title" className="font-serif text-sm leading-tight">
-                      Richiesta disponibilità
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 md:p-8">
+              {(sentOk === true || sentOk === false || errorMsg) && (
+                <div
+                  className={`mb-6 p-4 border font-serif text-[14px] leading-snug rounded-sm ${
+                    sentOk ? 'border-green-300 bg-green-50 text-green-900' : 'border-red-200 bg-red-50 text-red-900'
+                  }`}
+                >
+                  {sentOk === true && <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>}
+                  {sentOk === false && <div>❌ {errorMsg}</div>}
+                  {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
+                </div>
+              )}
+
+              {sentOk !== true && (
+                <div className="space-y-6">
+                  {/* DATE */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Check-in</label>
+                      <input
+                        type="date"
+                        value={checkIn}
+                        onChange={(e) => {
+                          setCheckIn(e.target.value)
+                          resetFeedback()
+                        }}
+                        className={inputCls}
+                      />
                     </div>
-                    <div className="font-serif text-[11px] opacity-70 leading-tight">
-                      Compila e invia in meno di 1 minuto
+                    <div>
+                      <label className={labelCls}>Check-out</label>
+                      <input
+                        type="date"
+                        value={checkOut}
+                        onChange={(e) => {
+                          setCheckOut(e.target.value)
+                          resetFeedback()
+                        }}
+                        className={inputCls}
+                      />
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center border border-[var(--cream)] hover:bg-[var(--cream)] transition-colors"
-                    aria-label="Chiudi"
-                    title="Chiudi"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div
-                  className="flex-1 overflow-y-auto px-4 py-4"
-                  style={{
-                    WebkitOverflowScrolling: 'touch',
-                    overscrollBehavior: 'contain',
-                  }}
-                >
-                  {(sentOk === true || sentOk === false || errorMsg) && (
-                    <div
-                      className={`mb-3 p-3 border font-serif text-[13px] leading-snug rounded-sm ${
-                        sentOk
-                          ? 'border-green-300 bg-green-50 text-green-900'
-                          : 'border-red-200 bg-red-50 text-red-900'
-                      }`}
-                    >
-                      {sentOk === true && (
-                        <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
-                      )}
-                      {sentOk === false && <div>❌ {errorMsg}</div>}
-                      {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
-                    </div>
+                  {dateError && (
+                    <p className="text-[13px] font-serif text-red-700 -mt-4">{dateError}</p>
                   )}
 
-                  {sentOk !== true && (
-                    <div className="space-y-4 pb-6">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className={labelCls}>Check-in</label>
-                          <input
-                            type="date"
-                            value={checkIn}
-                            onChange={(e) => {
-                              setCheckIn(e.target.value)
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
-                        </div>
-
-                        <div>
-                          <label className={labelCls}>Check-out</label>
-                          <input
-                            type="date"
-                            value={checkOut}
-                            onChange={(e) => {
-                              setCheckOut(e.target.value)
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
-                        </div>
-                      </div>
-
-                      {dateError && (
-                        <p className="text-[12px] font-serif text-red-700 leading-tight -mt-2">
-                          {dateError}
-                        </p>
-                      )}
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className={labelCls}>Adulti</label>
-                          <div className={iconWrap}>
-                            <Users className={iconCls} />
-                            <input
-                              type="number"
-                              min={1}
-                              value={adults}
-                              onChange={(e) => {
-                                setAdults(Math.max(1, Number(e.target.value || 1)))
-                                resetFeedback()
-                              }}
-                              className={inputCls}
-                            />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className={labelCls}>Ragazzi</label>
-                          <div className={iconWrap}>
-                            <Users className={iconCls} />
-                            <input
-                              type="number"
-                              min={0}
-                              value={children}
-                              onChange={(e) => {
-                                const v = Math.max(0, Number(e.target.value || 0))
-                                setChildren(v)
-                                if (v === 0) setChildrenAges('')
-                                resetFeedback()
-                              }}
-                              className={inputCls}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {children > 0 && (
-                        <div>
-                          <label className={labelCls}>Età ragazzi</label>
-                          <input
-                            type="text"
-                            value={childrenAges}
-                            onChange={(e) => {
-                              setChildrenAges(e.target.value)
-                              resetFeedback()
-                            }}
-                            placeholder="Es. 3, 7"
-                            className={inputCls}
-                          />
-                        </div>
-                      )}
-
-                      <div>
-                        <label className={labelCls}>Nome e Cognome</label>
+                  {/* OSPITI */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Adulti</label>
+                      <div className={iconWrap}>
+                        <Users className={iconCls} />
                         <input
-                          type="text"
-                          value={fullName}
+                          type="number"
+                          min={1}
+                          value={adults}
                           onChange={(e) => {
-                            setFullName(e.target.value)
+                            setAdults(Math.max(1, Number(e.target.value || 1)))
                             resetFeedback()
                           }}
-                          placeholder="Nome Cognome"
                           className={inputCls}
                         />
                       </div>
-
-                      <div>
-                        <label className={labelCls}>Cellulare</label>
-                        <div className={iconWrap}>
-                          <Phone className={iconCls} />
-                          <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => {
-                              setPhone(e.target.value)
-                              resetFeedback()
-                            }}
-                            placeholder="+39 ..."
-                            className={inputCls}
-                            inputMode="tel"
-                          />
-                        </div>
-                        {phone.trim().length > 0 && !isPhoneValid && (
-                          <p className="mt-1 text-[11px] text-red-700 font-serif leading-tight">
-                            Numero non valido.
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className={labelCls}>Email</label>
-                        <div className={iconWrap}>
-                          <AtSign className={iconCls} />
-                          <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => {
-                              setEmail(e.target.value)
-                              resetFeedback()
-                            }}
-                            placeholder="nome@email.com"
-                            className={inputCls}
-                          />
-                        </div>
-                        {email.trim().length > 0 && !isEmailValid && (
-                          <p className="mt-1 text-[11px] text-red-700 font-serif leading-tight">
-                            Email non valida.
-                          </p>
-                        )}
-                        <p className="mt-1 text-[11px] font-serif opacity-65 leading-tight">
-                          Inserisci almeno email o cellulare.
-                        </p>
-                      </div>
-
-                      <div>
-                        {!showDiscount ? (
-                          <button
-                            type="button"
-                            onClick={() => setShowDiscount(true)}
-                            className="text-sm font-serif underline underline-offset-4 opacity-80 hover:opacity-100"
-                          >
-                            Hai un codice sconto?
-                          </button>
-                        ) : (
-                          <div>
-                            <label className={labelCls}>Codice sconto</label>
-                            <div className={iconWrap}>
-                              <Tag className={iconCls} />
-                              <input
-                                type="text"
-                                value={discountCode}
-                                onChange={(e) => {
-                                  setDiscountCode(e.target.value.toUpperCase())
-                                  resetFeedback()
-                                }}
-                                placeholder="Codice"
-                                className={inputCls}
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="pt-1 text-[12px] font-serif opacity-75 text-left leading-tight">
-                        {nights > 0 ? (
-                          <span>
-                            Soggiorno: <strong>{nights}</strong> notti
-                          </span>
-                        ) : (
-                          <span>Inserisci le date per calcolare il soggiorno.</span>
-                        )}
+                    </div>
+                    <div>
+                      <label className={labelCls}>Ragazzi</label>
+                      <div className={iconWrap}>
+                        <Users className={iconCls} />
+                        <input
+                          type="number"
+                          min={0}
+                          value={children}
+                          onChange={(e) => {
+                            const v = Math.max(0, Number(e.target.value || 0))
+                            setChildren(v)
+                            if (v === 0) setChildrenAges('')
+                            resetFeedback()
+                          }}
+                          className={inputCls}
+                        />
                       </div>
                     </div>
+                  </div>
+
+                  {children > 0 && (
+                    <div>
+                      <label className={labelCls}>Età ragazzi</label>
+                      <input
+                        type="text"
+                        value={childrenAges}
+                        onChange={(e) => {
+                          setChildrenAges(e.target.value)
+                          resetFeedback()
+                        }}
+                        placeholder="Es. 3, 7"
+                        className={inputCls}
+                      />
+                    </div>
                   )}
-                </div>
 
-                <div
-                  className="shrink-0 border-t border-[var(--cream)] bg-[var(--paper)] px-4 py-3"
-                  style={{
-                    paddingBottom:
-                      'max(14px, calc(env(safe-area-inset-bottom) + var(--kb-offset, 0px) + 10px))',
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
-                    >
-                      Chiudi
-                    </button>
+                  {/* CONTATTI */}
+                  <div>
+                    <label className={labelCls}>Nome e Cognome</label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => {
+                        setFullName(e.target.value)
+                        resetFeedback()
+                      }}
+                      placeholder="Mario Rossi"
+                      className={inputCls}
+                    />
+                  </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelCls}>Cellulare</label>
+                      <div className={iconWrap}>
+                        <Phone className={iconCls} />
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => {
+                            setPhone(e.target.value)
+                            resetFeedback()
+                          }}
+                          placeholder="+39 ..."
+                          className={inputCls}
+                          inputMode="tel"
+                        />
+                      </div>
+                      {phone.trim().length > 0 && !isPhoneValid && (
+                        <p className="mt-1 text-[12px] text-red-700 font-serif">Numero non valido.</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Email</label>
+                      <div className={iconWrap}>
+                        <AtSign className={iconCls} />
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value)
+                            resetFeedback()
+                          }}
+                          placeholder="nome@email.com"
+                          className={inputCls}
+                        />
+                      </div>
+                      {email.trim().length > 0 && !isEmailValid && (
+                        <p className="mt-1 text-[12px] text-red-700 font-serif">Email non valida.</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-[12px] font-serif opacity-70">
+                    Inserisci almeno email o cellulare per essere ricontattato.
+                  </p>
+
+                  {/* SCONTO E RIASSUNTO */}
+                  <div className="pt-2 border-t border-[var(--cream)]">
+                    {!showDiscount ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowDiscount(true)}
+                        className="text-sm font-serif underline underline-offset-4 opacity-80 hover:opacity-100"
+                      >
+                        Hai un codice sconto?
+                      </button>
+                    ) : (
+                      <div className="mt-2">
+                        <label className={labelCls}>Codice sconto</label>
+                        <div className={iconWrap}>
+                          <Tag className={iconCls} />
+                          <input
+                            type="text"
+                            value={discountCode}
+                            onChange={(e) => {
+                              setDiscountCode(e.target.value.toUpperCase())
+                              resetFeedback()
+                            }}
+                            placeholder="Codice"
+                            className={inputCls}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-[13px] font-serif opacity-80 pt-2">
+                    {nights > 0 ? (
+                      <span>Soggiorno: <strong>{nights}</strong> notti</span>
+                    ) : (
+                      <span>Inserisci le date per calcolare il soggiorno.</span>
+                    )}
+                  </div>
+
+                  {/* PULSANTI AZIONE (Ora fanno parte del flusso normale della pagina) */}
+                  <div className="mt-8 pt-6 border-t border-[var(--cream)] flex flex-col sm:flex-row gap-3">
                     <button
                       type="button"
                       onClick={sendEmail}
                       disabled={!canSend || !!dateError}
-                      className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all ${
+                      className={`w-full py-4 rounded-sm font-serif text-lg border-2 transition-all flex items-center justify-center gap-2 ${
                         !canSend || !!dateError
                           ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
                           : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90'
                       }`}
                     >
-                      <Mail className="w-4 h-4" />
-                      <span>{sending ? 'Invio...' : 'Invia richiesta'}</span>
+                      <Mail className="w-5 h-5" />
+                      <span>{sending ? 'Invio in corso...' : 'Invia Richiesta'}</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => setOpen(false)}
+                      className="w-full sm:w-auto px-6 py-4 border border-[var(--cream)] font-serif text-base hover:bg-[var(--cream)] transition-colors"
+                    >
+                      Annulla
                     </button>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {sentOk === true && (
+                <div className="mt-6 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="px-8 py-4 bg-[var(--sienna)] text-[var(--paper)] rounded-sm font-serif text-lg hover:opacity-90 transition-opacity"
+                  >
+                    Chiudi e Torna al Sito
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

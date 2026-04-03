@@ -56,39 +56,37 @@ export function BookingCTA() {
   useEffect(() => {
     if (!open) return
 
-    const syncViewportHeight = () => {
+    const setViewportHeight = () => {
       document.documentElement.style.setProperty('--app-vh', `${window.innerHeight}px`)
     }
 
-    syncViewportHeight()
-    window.addEventListener('resize', syncViewportHeight)
-    window.addEventListener('orientationchange', syncViewportHeight)
+    setViewportHeight()
+    window.addEventListener('resize', setViewportHeight)
+    window.addEventListener('orientationchange', setViewportHeight)
 
+    const scrollY = window.scrollY
     const previousHtmlOverflow = document.documentElement.style.overflow
     const previousBodyOverflow = document.body.style.overflow
     const previousBodyPosition = document.body.style.position
+    const previousBodyTop = document.body.style.top
     const previousBodyWidth = document.body.style.width
-    const scrollY = window.scrollY
 
     document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
     document.body.style.position = 'fixed'
     document.body.style.top = `-${scrollY}px`
-    document.body.style.left = '0'
-    document.body.style.right = '0'
     document.body.style.width = '100%'
 
     return () => {
       document.documentElement.style.overflow = previousHtmlOverflow
       document.body.style.overflow = previousBodyOverflow
       document.body.style.position = previousBodyPosition
+      document.body.style.top = previousBodyTop
       document.body.style.width = previousBodyWidth
-      const top = document.body.style.top
-      document.body.style.top = ''
-      window.scrollTo(0, Math.abs(parseInt(top || '0', 10)) || scrollY)
+      window.scrollTo(0, scrollY)
 
-      window.removeEventListener('resize', syncViewportHeight)
-      window.removeEventListener('orientationchange', syncViewportHeight)
+      window.removeEventListener('resize', setViewportHeight)
+      window.removeEventListener('orientationchange', setViewportHeight)
     }
   }, [open])
 
@@ -98,7 +96,8 @@ export function BookingCTA() {
   const isPhoneValid = phone.trim().length === 0 || phone.trim().length >= 6
 
   const hasAtLeastOneContact =
-    (email.trim().length > 0 && isEmailValid) || (phone.trim().length > 0 && isPhoneValid)
+    (email.trim().length > 0 && isEmailValid) ||
+    (phone.trim().length > 0 && isPhoneValid)
 
   const dateError = useMemo(() => {
     if (!checkIn || !checkOut) return ''
@@ -124,6 +123,21 @@ export function BookingCTA() {
     !sending
 
   const resetFeedback = () => {
+    setSentOk(null)
+    setErrorMsg('')
+  }
+
+  const resetForm = () => {
+    setCheckIn('')
+    setCheckOut('')
+    setAdults(2)
+    setChildren(0)
+    setChildrenAges('')
+    setFullName('')
+    setDiscountCode('')
+    setShowDiscount(false)
+    setEmail('')
+    setPhone('')
     setSentOk(null)
     setErrorMsg('')
   }
@@ -213,7 +227,7 @@ export function BookingCTA() {
               resetFeedback()
               setOpen(true)
             }}
-            className="border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all"
+            className="min-h-[52px] border-2 border-[var(--paper)] text-[var(--paper)] px-10 py-5 rounded-sm font-serif text-xl flex items-center gap-3 hover:bg-[var(--paper)] hover:text-[var(--sienna)] transition-all"
           >
             <Calendar className="w-6 h-6" />
             <span>Check Availability</span>
@@ -232,7 +246,10 @@ export function BookingCTA() {
             aria-labelledby="booking-modal-title"
             style={{ height: 'var(--app-vh, 100dvh)' }}
           >
-            <div className="absolute inset-0 bg-black/55" onClick={closeModal} />
+            <div
+              className="absolute inset-0 bg-black/55"
+              onClick={closeModal}
+            />
 
             <div className="absolute inset-0 md:flex md:items-center md:justify-center md:p-4">
               <div
@@ -240,4 +257,333 @@ export function BookingCTA() {
                   absolute inset-x-0 top-0 bottom-0
                   md:relative md:inset-auto md:w-full md:max-w-md md:max-h-[90vh]
                   bg-[var(--paper)] text-[var(--brown)]
-                  md:border 
+                  md:border md:border-[var(--cream)] md:shadow-2xl
+                  rounded-none md:rounded-sm
+                  flex flex-col overflow-hidden
+                "
+                style={{
+                  height: 'var(--app-vh, 100dvh)',
+                  paddingTop: 'max(12px, env(safe-area-inset-top))',
+                  paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+                }}
+              >
+                <div className="px-4 py-3 border-b border-[var(--cream)] bg-[var(--paper)] flex items-center justify-between gap-3 shrink-0">
+                  <div className="text-left min-w-0">
+                    <div
+                      id="booking-modal-title"
+                      className="font-serif text-sm leading-tight"
+                    >
+                      Richiesta disponibilità
+                    </div>
+                    <div className="font-serif text-[11px] opacity-70 leading-tight">
+                      Compila e invia in meno di 1 minuto
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center border border-[var(--cream)] hover:bg-[var(--cream)] transition-colors"
+                    aria-label="Chiudi"
+                    title="Chiudi"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div
+                  className="flex-1 overflow-y-auto px-4 py-4"
+                  style={{
+                    WebkitOverflowScrolling: 'touch',
+                    overscrollBehavior: 'contain',
+                  }}
+                >
+                  {(sentOk === true || sentOk === false || errorMsg) && (
+                    <div
+                      className={`mb-3 p-3 border font-serif text-[13px] leading-snug rounded-sm ${
+                        sentOk
+                          ? 'border-green-300 bg-green-50 text-green-900'
+                          : 'border-red-200 bg-red-50 text-red-900'
+                      }`}
+                    >
+                      {sentOk === true && (
+                        <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
+                      )}
+
+                      {sentOk === false && (
+                        <div>
+                          ❌ {errorMsg}
+                        </div>
+                      )}
+
+                      {sentOk === null && errorMsg && (
+                        <div>⚠️ {errorMsg}</div>
+                      )}
+                    </div>
+                  )}
+
+                  {sentOk !== true && (
+                    <div className="space-y-4 pb-6">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={labelCls}>Check-in</label>
+                          <input
+                            type="date"
+                            value={checkIn}
+                            onChange={(e) => {
+                              setCheckIn(e.target.value)
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Check-out</label>
+                          <input
+                            type="date"
+                            value={checkOut}
+                            onChange={(e) => {
+                              setCheckOut(e.target.value)
+                              resetFeedback()
+                            }}
+                            className={inputCls}
+                          />
+                        </div>
+                      </div>
+
+                      {dateError && (
+                        <p className="text-[12px] font-serif text-red-700 leading-tight -mt-2">
+                          {dateError}
+                        </p>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className={labelCls}>Adulti</label>
+                          <div className={iconWrap}>
+                            <Users className={iconCls} />
+                            <input
+                              type="number"
+                              min={1}
+                              value={adults}
+                              onChange={(e) => {
+                                setAdults(Math.max(1, Number(e.target.value || 1)))
+                                resetFeedback()
+                              }}
+                              className={inputCls}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className={labelCls}>Ragazzi</label>
+                          <div className={iconWrap}>
+                            <Users className={iconCls} />
+                            <input
+                              type="number"
+                              min={0}
+                              value={children}
+                              onChange={(e) => {
+                                const v = Math.max(0, Number(e.target.value || 0))
+                                setChildren(v)
+                                if (v === 0) setChildrenAges('')
+                                resetFeedback()
+                              }}
+                              className={inputCls}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {children > 0 && (
+                        <div>
+                          <label className={labelCls}>Età ragazzi</label>
+                          <input
+                            type="text"
+                            value={childrenAges}
+                            onChange={(e) => {
+                              setChildrenAges(e.target.value)
+                              resetFeedback()
+                            }}
+                            placeholder="Es. 3, 7"
+                            className={inputCls}
+                          />
+                        </div>
+                      )}
+
+                      <div>
+                        <label className={labelCls}>Nome e Cognome</label>
+                        <input
+                          type="text"
+                          value={fullName}
+                          onChange={(e) => {
+                            setFullName(e.target.value)
+                            resetFeedback()
+                          }}
+                          placeholder="Nome Cognome"
+                          className={inputCls}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelCls}>Cellulare</label>
+                        <div className={iconWrap}>
+                          <Phone className={iconCls} />
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                              setPhone(e.target.value)
+                              resetFeedback()
+                            }}
+                            placeholder="+39 ..."
+                            className={inputCls}
+                            inputMode="tel"
+                          />
+                        </div>
+                        {phone.trim().length > 0 && !isPhoneValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif leading-tight">
+                            Numero non valido.
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className={labelCls}>Email</label>
+                        <div className={iconWrap}>
+                          <AtSign className={iconCls} />
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => {
+                              setEmail(e.target.value)
+                              resetFeedback()
+                            }}
+                            placeholder="nome@email.com"
+                            className={inputCls}
+                          />
+                        </div>
+                        {email.trim().length > 0 && !isEmailValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif leading-tight">
+                            Email non valida.
+                          </p>
+                        )}
+                        <p className="mt-1 text-[11px] font-serif opacity-65 leading-tight">
+                          Inserisci almeno email o cellulare.
+                        </p>
+                      </div>
+
+                      <div>
+                        {!showDiscount ? (
+                          <button
+                            type="button"
+                            onClick={() => setShowDiscount(true)}
+                            className="text-sm font-serif underline underline-offset-4 opacity-80 hover:opacity-100"
+                          >
+                            Hai un codice sconto?
+                          </button>
+                        ) : (
+                          <div>
+                            <label className={labelCls}>Codice sconto</label>
+                            <div className={iconWrap}>
+                              <Tag className={iconCls} />
+                              <input
+                                type="text"
+                                value={discountCode}
+                                onChange={(e) => {
+                                  setDiscountCode(e.target.value.toUpperCase())
+                                  resetFeedback()
+                                }}
+                                placeholder="Codice"
+                                className={inputCls}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="pt-1 text-[12px] font-serif opacity-75 text-left leading-tight">
+                        {nights > 0 ? (
+                          <span>
+                            Soggiorno: <strong>{nights}</strong> notti
+                          </span>
+                        ) : (
+                          <span>Inserisci le date per calcolare il soggiorno.</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {sentOk === true && (
+                    <div className="py-6 text-left space-y-3">
+                      <p className="font-serif text-sm leading-relaxed">
+                        Abbiamo ricevuto la tua richiesta di disponibilità.
+                      </p>
+                      <p className="font-serif text-sm leading-relaxed opacity-80">
+                        Il nostro team ti risponderà al più presto con conferma e tariffa.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className="shrink-0 border-t border-[var(--cream)] bg-[var(--paper)] px-4 py-3"
+                  style={{
+                    paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom) + 10px))',
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    {sentOk === true ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
+                        >
+                          Chiudi
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90"
+                        >
+                          Nuova richiesta
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
+                        >
+                          Chiudi
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={sendEmail}
+                          disabled={!canSend || !!dateError}
+                          className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all ${
+                            !canSend || !!dateError
+                              ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
+                              : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90'
+                          }`}
+                        >
+                          <Mail className="w-4 h-4" />
+                          <span>{sending ? 'Invio...' : 'Invia richiesta'}</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}

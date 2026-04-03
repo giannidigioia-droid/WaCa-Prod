@@ -1,7 +1,14 @@
 import React, { useMemo, useState } from 'react'
 import emailjs from '@emailjs/browser'
-import { OliveBranch } from './DecorativeElements'
-import { Calendar, Mail, Users, Phone, AtSign, X, ArrowRight } from 'lucide-react'
+import {
+  Calendar,
+  Mail,
+  Users,
+  Phone,
+  AtSign,
+  X,
+  ArrowRight,
+} from 'lucide-react'
 
 const EMAILJS_SERVICE_ID = 'service_udnxwt2'
 const EMAILJS_TEMPLATE_ID = 'template_72hewse'
@@ -137,259 +144,316 @@ export function BookingCTA() {
   }
 
   const labelCls =
-    'block text-[11px] md:text-[12px] font-serif mb-1 text-[var(--brown)]/85'
+    'block text-[10px] uppercase tracking-[0.04em] mb-1 text-[#e9ddd0] font-serif'
   const inputCls =
-    'w-full h-[42px] md:h-[44px] border border-[#e7dccb] bg-[#fbf7f0] px-3 py-2 font-serif text-[15px] text-[var(--brown)] rounded-none outline-none focus:border-[var(--sienna)] focus:ring-1 focus:ring-[var(--sienna)]'
-  const smallInputWrap = 'flex items-center gap-2'
-  const iconCls = 'w-4 h-4 text-[var(--brown)]/50 shrink-0'
+    'w-full h-[44px] border border-[#ebdfd0] bg-[#f9f4ec] px-3 text-[15px] text-[#8b8177] font-serif shadow-none outline-none focus:border-[#bb8a63] focus:ring-1 focus:ring-[#bb8a63]'
+  const iconCls = 'w-4 h-4 text-[#efe5da] opacity-90 shrink-0'
+  const thinBorder = 'border border-[rgba(216,197,176,0.85)]'
+  const shellBg = '#f7f1e7'
+  const terracotta = '#b0663b'
 
   return (
     <section
       id="booking"
-      className="py-20 px-4 bg-[var(--sienna)] relative overflow-hidden text-[var(--paper)] scroll-mt-24"
+      className="relative overflow-hidden px-4 py-14 md:py-20"
+      style={{
+        background:
+          'linear-gradient(135deg, #a85d36 0%, #b56a3e 50%, #9b542f 100%)',
+      }}
     >
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <OliveBranch className="w-full h-full object-cover text-white transform scale-150 opacity-20" />
-      </div>
+      <div className="mx-auto max-w-[430px]">
+        <div className="relative px-[10px] pt-4 pb-[10px]">
+          <div
+            className="absolute inset-y-[6px] left-[14px] right-0"
+            style={{
+              background: '#eadfce',
+              border: '1px solid rgba(233,220,205,0.8)',
+            }}
+          />
 
-      <div className="relative z-10 max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="font-script text-5xl md:text-7xl mb-4 text-[var(--cream)]">
-            Prenota il Tuo Soggiorno
-          </h2>
-          <p className="font-serif text-xl md:text-2xl text-[var(--paper)] opacity-90">
-            Richiesta disponibilità diretta
-          </p>
-        </div>
+          <div
+            className="absolute inset-y-[3px] left-[7px] right-[7px]"
+            style={{
+              background: '#efe4d4',
+              border: '1px solid rgba(228,212,194,0.9)',
+            }}
+          />
 
-        <div className="flex justify-center">
-          <div className="relative w-full max-w-[340px] md:max-w-[360px]">
-            <div className="absolute inset-0 translate-x-2 translate-y-2 border border-[rgba(120,84,58,0.18)] bg-[#efe6d7]" />
-
-            <div className="relative bg-[#f7f1e6] border border-[#dccfbf] shadow-[0_12px_35px_rgba(74,43,24,0.14)] px-4 pt-10 pb-4 md:px-5">
-              <div className="absolute left-1/2 -translate-x-1/2 -top-6">
-                <div className="h-[56px] w-[56px] rounded-full bg-[var(--sienna)] text-[var(--paper)] border-4 border-[#f7f1e6] flex items-center justify-center text-[9px] font-serif uppercase tracking-[0.12em] text-center leading-tight shadow-sm">
+          <div
+            className="relative"
+            style={{
+              background: shellBg,
+              border: '1px solid #e8dccd',
+              boxShadow: '0 18px 40px rgba(78, 39, 18, 0.18)',
+            }}
+          >
+            <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-20">
+              <div
+                className="h-[62px] w-[62px] rounded-full flex items-center justify-center text-center"
+                style={{
+                  background: terracotta,
+                  color: '#f8efe3',
+                  border: `4px solid ${shellBg}`,
+                  boxShadow: '0 6px 14px rgba(97, 54, 29, 0.18)',
+                }}
+              >
+                <div className="font-serif uppercase leading-[1.05] tracking-[0.08em] text-[10px]">
                   Direct
                   <br />
                   Booking
                 </div>
               </div>
+            </div>
 
-              <div className="absolute inset-2 pointer-events-none border border-[rgba(160,132,102,0.18)]" />
+            <div className="p-3 pt-8 md:p-4 md:pt-9">
+              <div className={`relative p-3 md:p-4 ${thinBorder}`}>
+                <div className="pointer-events-none absolute inset-0 opacity-[0.22]">
+                  <div className="absolute left-2 top-2 h-7 w-7 border-l border-t border-[#e6d8c7]" />
+                  <div className="absolute right-2 top-2 h-7 w-7 border-r border-t border-[#e6d8c7]" />
+                  <div className="absolute left-2 bottom-2 h-7 w-7 border-l border-b border-[#e6d8c7]" />
+                  <div className="absolute right-2 bottom-2 h-7 w-7 border-r border-b border-[#e6d8c7]" />
+                </div>
 
-              <div className="relative space-y-3">
-                {(sentOk === true || sentOk === false || errorMsg) && (
-                  <div
-                    className={`p-2 border font-serif text-[12px] leading-snug ${
-                      sentOk
-                        ? 'border-green-300 bg-green-50 text-green-900'
-                        : 'border-red-200 bg-red-50 text-red-900'
-                    }`}
-                  >
-                    {sentOk === true && (
-                      <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
-                    )}
-                    {sentOk === false && <div>❌ {errorMsg}</div>}
-                    {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
-                  </div>
-                )}
-
-                {sentOk !== true && (
-                  <>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelCls}>Check-In</label>
-                        <div className={smallInputWrap}>
-                          <Calendar className={iconCls} aria-hidden="true" />
-                          <input
-                            type="date"
-                            value={checkIn}
-                            onChange={(e) => {
-                              setCheckIn(e.target.value)
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className={labelCls}>Check-Out</label>
-                        <div className={smallInputWrap}>
-                          <Calendar className={iconCls} aria-hidden="true" />
-                          <input
-                            type="date"
-                            value={checkOut}
-                            onChange={(e) => {
-                              setCheckOut(e.target.value)
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
-                        </div>
-                      </div>
+                <div className="relative z-10">
+                  {(sentOk === true || sentOk === false || errorMsg) && (
+                    <div
+                      className={`mb-3 p-2 text-[12px] font-serif leading-snug border ${
+                        sentOk
+                          ? 'border-green-300 bg-green-50 text-green-900'
+                          : 'border-red-200 bg-red-50 text-red-900'
+                      }`}
+                    >
+                      {sentOk === true && (
+                        <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
+                      )}
+                      {sentOk === false && <div>❌ {errorMsg}</div>}
+                      {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
                     </div>
+                  )}
 
-                    {dateError && (
-                      <p className="text-[11px] font-serif text-red-700 -mt-1">
-                        {dateError}
-                      </p>
-                    )}
+                  {sentOk !== true && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelCls}>Check-In</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={checkIn}
+                              onChange={(e) => {
+                                setCheckIn(e.target.value)
+                                resetFeedback()
+                              }}
+                              className={`${inputCls} pr-9`}
+                            />
+                            <Calendar
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelCls}>Adulti</label>
-                        <div className={smallInputWrap}>
-                          <Users className={iconCls} aria-hidden="true" />
-                          <input
-                            type="number"
-                            min={1}
-                            value={adults}
-                            onChange={(e) => {
-                              setAdults(Math.max(1, Number(e.target.value || 1)))
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
+                        <div>
+                          <label className={labelCls}>Check-Out</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={checkOut}
+                              onChange={(e) => {
+                                setCheckOut(e.target.value)
+                                resetFeedback()
+                              }}
+                              className={`${inputCls} pr-9`}
+                            />
+                            <Calendar
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#dfd3c6]"
+                              aria-hidden="true"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      <div>
-                        <label className={labelCls}>Ragazzi</label>
-                        <div className={smallInputWrap}>
-                          <Users className={iconCls} aria-hidden="true" />
-                          <input
-                            type="number"
-                            min={0}
-                            value={children}
-                            onChange={(e) => {
-                              setChildren(Math.max(0, Number(e.target.value || 0)))
-                              resetFeedback()
-                            }}
-                            className={inputCls}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Nome Completo</label>
-                      <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => {
-                          setFullName(e.target.value)
-                          resetFeedback()
-                        }}
-                        placeholder="Alessandro Rossi"
-                        className={inputCls}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Email / Telefono</label>
-                      <div className="space-y-2">
-                        <div className={smallInputWrap}>
-                          <AtSign className={iconCls} aria-hidden="true" />
-                          <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => {
-                              setEmail(e.target.value)
-                              resetFeedback()
-                            }}
-                            placeholder="a.rossi@email.it"
-                            className={inputCls}
-                          />
-                        </div>
-
-                        <div className={smallInputWrap}>
-                          <Phone className={iconCls} aria-hidden="true" />
-                          <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => {
-                              setPhone(e.target.value)
-                              resetFeedback()
-                            }}
-                            placeholder="+39 347 123 4567"
-                            className={inputCls}
-                            inputMode="tel"
-                          />
-                        </div>
-                      </div>
-
-                      {email.trim().length > 0 && !isEmailValid && (
-                        <p className="mt-1 text-[11px] text-red-700 font-serif">
-                          Email non valida.
+                      {dateError && (
+                        <p className="mt-2 text-[11px] font-serif text-red-700">
+                          {dateError}
                         </p>
                       )}
 
-                      {phone.trim().length > 0 && !isPhoneValid && (
-                        <p className="mt-1 text-[11px] text-red-700 font-serif">
-                          Numero non valido.
-                        </p>
-                      )}
-                    </div>
+                      <div className="mt-4 grid grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelCls}>Adulti</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={1}
+                              value={adults}
+                              onChange={(e) => {
+                                setAdults(Math.max(1, Number(e.target.value || 1)))
+                                resetFeedback()
+                              }}
+                              className={inputCls}
+                            />
+                          </div>
+                        </div>
 
-                    <div className="flex justify-center pt-1">
-                      <div className="px-4 py-1.5 rounded-full border border-[#d5c6b2] bg-[#efe7da] text-[11px] font-serif uppercase tracking-[0.08em] text-[var(--brown)]">
-                        {nights > 0 ? `Totale: ${nights} notti` : 'Totale: - notti'}
+                        <div>
+                          <label className={labelCls}>Ragazzi</label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min={0}
+                              value={children}
+                              onChange={(e) => {
+                                setChildren(Math.max(0, Number(e.target.value || 0)))
+                                resetFeedback()
+                              }}
+                              className={inputCls}
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="pt-1 space-y-2">
-                      <button
-                        type="button"
-                        onClick={sendEmail}
-                        disabled={!canSend || !!dateError}
-                        className={`group w-full h-[46px] flex items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.08em] transition-all ${
-                          !canSend || !!dateError
-                            ? 'bg-[#c8b19e] text-white/80 cursor-not-allowed'
-                            : 'bg-[var(--sienna)] text-[var(--paper)] hover:opacity-95'
-                        }`}
-                        aria-label="Invia richiesta"
-                      >
-                        <Mail className="w-4 h-4" aria-hidden="true" />
-                        <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
-                        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[2px]" aria-hidden="true" />
-                      </button>
+                      <div className="mt-4">
+                        <label className={labelCls}>Nome Completo</label>
+                        <input
+                          type="text"
+                          value={fullName}
+                          onChange={(e) => {
+                            setFullName(e.target.value)
+                            resetFeedback()
+                          }}
+                          placeholder="Alessandro Rossi"
+                          className={inputCls}
+                        />
+                      </div>
 
-                      <div className="flex justify-center">
+                      <div className="mt-4">
+                        <label className={labelCls}>Email / Telefono</label>
+
+                        <div className="space-y-3">
+                          <div className="relative">
+                            <AtSign
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#efe5da]"
+                              aria-hidden="true"
+                            />
+                            <input
+                              type="email"
+                              value={email}
+                              onChange={(e) => {
+                                setEmail(e.target.value)
+                                resetFeedback()
+                              }}
+                              placeholder="a.rossi@email.it"
+                              className={`${inputCls} pl-10`}
+                            />
+                          </div>
+
+                          <div className="relative">
+                            <Phone
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#efe5da]"
+                              aria-hidden="true"
+                            />
+                            <input
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => {
+                                setPhone(e.target.value)
+                                resetFeedback()
+                              }}
+                              placeholder="+39 347 123 4567"
+                              className={`${inputCls} pl-10`}
+                              inputMode="tel"
+                            />
+                          </div>
+                        </div>
+
+                        {email.trim().length > 0 && !isEmailValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif">
+                            Email non valida.
+                          </p>
+                        )}
+
+                        {phone.trim().length > 0 && !isPhoneValid && (
+                          <p className="mt-1 text-[11px] text-red-700 font-serif">
+                            Numero non valido.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="mt-5 flex justify-center">
+                        <div
+                          className="rounded-full px-5 py-2 font-serif text-[12px] uppercase tracking-[0.06em] text-[#7f7060]"
+                          style={{
+                            background: '#f6efe6',
+                            border: '1px solid #d8ccbc',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)',
+                          }}
+                        >
+                          {nights > 0 ? `Totale: ${nights} notti` : 'Totale: - notti'}
+                        </div>
+                      </div>
+
+                      <div className="mt-5">
+                        <button
+                          type="button"
+                          onClick={sendEmail}
+                          disabled={!canSend || !!dateError}
+                          className={`group flex h-[48px] w-full items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.06em] transition-all ${
+                            !canSend || !!dateError
+                              ? 'cursor-not-allowed bg-[#ccb6a5] text-white/80'
+                              : 'bg-[#ccb4a2] text-[#f8f1e8] hover:brightness-[0.98]'
+                          }`}
+                          aria-label="Invia richiesta"
+                        >
+                          <Mail className="w-4 h-4" aria-hidden="true" />
+                          <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
+                          <ArrowRight
+                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[2px]"
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+
+                      <div className="mt-3 flex justify-center">
                         <button
                           type="button"
                           onClick={resetForm}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 border border-[#d9cbb9] bg-[#f5eee3] text-[var(--brown)] font-serif text-[12px] rounded-full hover:bg-[#efe5d6] transition-colors"
+                          className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-serif text-[12px] text-[#7d6e60] transition-colors hover:bg-[#f4ebde]"
+                          style={{
+                            border: '1px solid #d9ccbc',
+                            background: '#fbf6ef',
+                            boxShadow: '0 1px 2px rgba(101, 73, 48, 0.05)',
+                          }}
                           aria-label="Chiudi form"
                         >
                           <X className="w-3.5 h-3.5" aria-hidden="true" />
                           <span>Chiudi Form</span>
                         </button>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
 
-                {sentOk === true && (
-                  <div className="pt-2 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="inline-flex items-center justify-center gap-1.5 px-4 py-2 border border-[#d9cbb9] bg-[#f5eee3] text-[var(--brown)] font-serif text-[12px] rounded-full hover:bg-[#efe5d6] transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" aria-hidden="true" />
-                      <span>Chiudi Form</span>
-                    </button>
-                  </div>
-                )}
+                  {sentOk === true && (
+                    <div className="pt-2 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-serif text-[12px] text-[#7d6e60] transition-colors hover:bg-[#f4ebde]"
+                        style={{
+                          border: '1px solid #d9ccbc',
+                          background: '#fbf6ef',
+                        }}
+                      >
+                        <X className="w-3.5 h-3.5" aria-hidden="true" />
+                        <span>Chiudi Form</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <p className="mt-8 text-center text-sm opacity-65 font-serif tracking-wide">
-          Best Price Guaranteed • Minimum stay 3 nights
-        </p>
       </div>
     </section>
   )

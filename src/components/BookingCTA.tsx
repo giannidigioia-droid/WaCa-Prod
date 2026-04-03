@@ -6,12 +6,12 @@ import { Calendar, Mail, Users, Phone, AtSign, X, Tag } from 'lucide-react'
 const EMAILJS_SERVICE_ID = 'service_udnxwt2'
 const EMAILJS_TEMPLATE_ID = 'template_72hewse'
 const EMAILJS_PUBLIC_KEY = '8lE8ILbaH1QxsXjFJ'
-
 const GOOGLE_ADS_SEND_TO = 'AW-17975995747/pl2CCPyc1f4bEOPaz_tC'
 
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void
+    visualViewport?: VisualViewport
   }
 }
 
@@ -56,37 +56,56 @@ export function BookingCTA() {
   useEffect(() => {
     if (!open) return
 
-    const setViewportHeight = () => {
-      document.documentElement.style.setProperty('--app-vh', `${window.innerHeight}px`)
-    }
-
-    setViewportHeight()
-    window.addEventListener('resize', setViewportHeight)
-    window.addEventListener('orientationchange', setViewportHeight)
-
+    const root = document.documentElement
+    const vv = window.visualViewport
     const scrollY = window.scrollY
-    const previousHtmlOverflow = document.documentElement.style.overflow
+
+    const previousHtmlOverflow = root.style.overflow
     const previousBodyOverflow = document.body.style.overflow
     const previousBodyPosition = document.body.style.position
     const previousBodyTop = document.body.style.top
     const previousBodyWidth = document.body.style.width
 
-    document.documentElement.style.overflow = 'hidden'
+    const updateViewportVars = () => {
+      const height = vv?.height ?? window.innerHeight
+      const offsetTop = vv?.offsetTop ?? 0
+      const keyboardInset = Math.max(0, window.innerHeight - height - offsetTop)
+
+      root.style.setProperty('--vvh', `${height}px`)
+      root.style.setProperty('--vv-top', `${offsetTop}px`)
+      root.style.setProperty('--kb-offset', `${keyboardInset}px`)
+    }
+
+    updateViewportVars()
+
+    root.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
     document.body.style.position = 'fixed'
     document.body.style.top = `-${scrollY}px`
     document.body.style.width = '100%'
 
+    window.addEventListener('resize', updateViewportVars)
+    window.addEventListener('orientationchange', updateViewportVars)
+    vv?.addEventListener('resize', updateViewportVars)
+    vv?.addEventListener('scroll', updateViewportVars)
+
     return () => {
-      document.documentElement.style.overflow = previousHtmlOverflow
+      root.style.overflow = previousHtmlOverflow
       document.body.style.overflow = previousBodyOverflow
       document.body.style.position = previousBodyPosition
       document.body.style.top = previousBodyTop
       document.body.style.width = previousBodyWidth
-      window.scrollTo(0, scrollY)
 
-      window.removeEventListener('resize', setViewportHeight)
-      window.removeEventListener('orientationchange', setViewportHeight)
+      root.style.removeProperty('--vvh')
+      root.style.removeProperty('--vv-top')
+      root.style.removeProperty('--kb-offset')
+
+      window.removeEventListener('resize', updateViewportVars)
+      window.removeEventListener('orientationchange', updateViewportVars)
+      vv?.removeEventListener('resize', updateViewportVars)
+      vv?.removeEventListener('scroll', updateViewportVars)
+
+      window.scrollTo(0, scrollY)
     }
   }, [open])
 
@@ -123,21 +142,6 @@ export function BookingCTA() {
     !sending
 
   const resetFeedback = () => {
-    setSentOk(null)
-    setErrorMsg('')
-  }
-
-  const resetForm = () => {
-    setCheckIn('')
-    setCheckOut('')
-    setAdults(2)
-    setChildren(0)
-    setChildrenAges('')
-    setFullName('')
-    setDiscountCode('')
-    setShowDiscount(false)
-    setEmail('')
-    setPhone('')
     setSentOk(null)
     setErrorMsg('')
   }
@@ -181,7 +185,7 @@ export function BookingCTA() {
 
       gtag_report_conversion()
       setSentOk(true)
-    } catch (err: any) {
+    } catch {
       setSentOk(false)
       setErrorMsg(
         'Si è verificato un problema temporaneo nell’invio della richiesta. Ti consigliamo di contattarci via WhatsApp nella sezione Contact Us.'
@@ -244,35 +248,31 @@ export function BookingCTA() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="booking-modal-title"
-            style={{ height: 'var(--app-vh, 100dvh)' }}
+            style={{
+              top: 'var(--vv-top, 0px)',
+              height: 'var(--vvh, 100vh)',
+            }}
           >
-            <div
-              className="absolute inset-0 bg-black/55"
-              onClick={closeModal}
-            />
+            <div className="absolute inset-0 bg-black/55" onClick={closeModal} />
 
             <div className="absolute inset-0 md:flex md:items-center md:justify-center md:p-4">
               <div
                 className="
                   absolute inset-x-0 top-0 bottom-0
-                  md:relative md:inset-auto md:w-full md:max-w-md md:max-h-[90vh]
+                  md:relative md:inset-auto md:w-full md:max-w-md
                   bg-[var(--paper)] text-[var(--brown)]
                   md:border md:border-[var(--cream)] md:shadow-2xl
                   rounded-none md:rounded-sm
                   flex flex-col overflow-hidden
                 "
                 style={{
-                  height: 'var(--app-vh, 100dvh)',
+                  height: '100%',
                   paddingTop: 'max(12px, env(safe-area-inset-top))',
-                  paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
                 }}
               >
                 <div className="px-4 py-3 border-b border-[var(--cream)] bg-[var(--paper)] flex items-center justify-between gap-3 shrink-0">
                   <div className="text-left min-w-0">
-                    <div
-                      id="booking-modal-title"
-                      className="font-serif text-sm leading-tight"
-                    >
+                    <div id="booking-modal-title" className="font-serif text-sm leading-tight">
                       Richiesta disponibilità
                     </div>
                     <div className="font-serif text-[11px] opacity-70 leading-tight">
@@ -309,16 +309,8 @@ export function BookingCTA() {
                       {sentOk === true && (
                         <div>✅ Richiesta inviata correttamente. Ti rispondiamo a breve.</div>
                       )}
-
-                      {sentOk === false && (
-                        <div>
-                          ❌ {errorMsg}
-                        </div>
-                      )}
-
-                      {sentOk === null && errorMsg && (
-                        <div>⚠️ {errorMsg}</div>
-                      )}
+                      {sentOk === false && <div>❌ {errorMsg}</div>}
+                      {sentOk === null && errorMsg && <div>⚠️ {errorMsg}</div>}
                     </div>
                   )}
 
@@ -514,69 +506,37 @@ export function BookingCTA() {
                       </div>
                     </div>
                   )}
-
-                  {sentOk === true && (
-                    <div className="py-6 text-left space-y-3">
-                      <p className="font-serif text-sm leading-relaxed">
-                        Abbiamo ricevuto la tua richiesta di disponibilità.
-                      </p>
-                      <p className="font-serif text-sm leading-relaxed opacity-80">
-                        Il nostro team ti risponderà al più presto con conferma e tariffa.
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 <div
                   className="shrink-0 border-t border-[var(--cream)] bg-[var(--paper)] px-4 py-3"
                   style={{
-                    paddingBottom: 'max(14px, calc(env(safe-area-inset-bottom) + 10px))',
+                    paddingBottom:
+                      'max(14px, calc(env(safe-area-inset-bottom) + var(--kb-offset, 0px) + 10px))',
                   }}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    {sentOk === true ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={closeModal}
-                          className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
-                        >
-                          Chiudi
-                        </button>
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
+                    >
+                      Chiudi
+                    </button>
 
-                        <button
-                          type="button"
-                          onClick={resetForm}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90"
-                        >
-                          Nuova richiesta
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          onClick={closeModal}
-                          className="px-4 py-3 border border-[var(--cream)] font-serif text-sm hover:bg-[var(--cream)] transition-colors min-h-[44px]"
-                        >
-                          Chiudi
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={sendEmail}
-                          disabled={!canSend || !!dateError}
-                          className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all ${
-                            !canSend || !!dateError
-                              ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
-                              : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90'
-                          }`}
-                        >
-                          <Mail className="w-4 h-4" />
-                          <span>{sending ? 'Invio...' : 'Invia richiesta'}</span>
-                        </button>
-                      </>
-                    )}
+                    <button
+                      type="button"
+                      onClick={sendEmail}
+                      disabled={!canSend || !!dateError}
+                      className={`inline-flex items-center justify-center gap-2 px-4 py-3 rounded-sm font-serif text-sm border-2 min-h-[44px] transition-all ${
+                        !canSend || !!dateError
+                          ? 'bg-transparent text-[var(--brown)] border-[var(--cream)] opacity-60 cursor-not-allowed'
+                          : 'bg-[var(--sienna)] text-[var(--paper)] border-[var(--sienna)] hover:opacity-90'
+                      }`}
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>{sending ? 'Invio...' : 'Invia richiesta'}</span>
+                    </button>
                   </div>
                 </div>
               </div>

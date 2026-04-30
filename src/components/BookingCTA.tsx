@@ -1,4 +1,3 @@
-Ecco il codice completo aggiornato con il bottone migliorato. Puoi copiare interamente questo blocco e incollarlo nel tuo file per sostituire il codice precedente:
 
 ```tsx
 import React, { useMemo, useState } from 'react'

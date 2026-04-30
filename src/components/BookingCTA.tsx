@@ -114,10 +114,10 @@ export function BookingCTA() {
   const [phone, setPhone] = useState('')
 
   const isEmailValid =
-    email.trim().length === 0 || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim())
+    email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim().toLowerCase())
 
   const isPhoneValid =
-    phone.trim().length === 0 || phone.trim().replace(/\\s+/g, '').length >= 6
+    phone.trim().length === 0 || phone.trim().replace(/\s+/g, '').length >= 6
 
   const hasAtLeastOneContact =
     (email.trim().length > 0 && isEmailValid) ||

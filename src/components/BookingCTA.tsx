@@ -114,7 +114,7 @@ export function BookingCTA() {
   const [phone, setPhone] = useState('')
 
   const isEmailValid =
-    email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    email.trim().length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim().toLowerCase())
 
   const isPhoneValid =
     phone.trim().length === 0 || phone.trim().replace(/\s+/g, '').length >= 6
@@ -443,17 +443,17 @@ export function BookingCTA() {
                           type="button"
                           onClick={sendEmail}
                           disabled={!canSend || !!dateError}
-                          className={`group flex h-[48px] w-full items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.06em] transition-all ${
+                          className={`group flex h-[48px] w-full items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.06em] transition-all duration-300 ${
                             !canSend || !!dateError
-                              ? 'cursor-not-allowed bg-[#ccb6a5] text-white/80'
-                              : 'bg-[#ccb4a2] text-[#f8f1e8] hover:brightness-[0.98]'
+                              ? 'cursor-not-allowed bg-[#e4d6c7] text-[#a39587]'
+                              : 'bg-[#b0663b] text-white shadow-md hover:bg-[#9b542f] hover:shadow-lg hover:-translate-y-0.5'
                           }`}
                           aria-label="Invia richiesta"
                         >
                           <Mail className="w-4 h-4" aria-hidden="true" />
                           <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
                           <ArrowRight
-                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[2px]"
+                            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[4px]"
                             aria-hidden="true"
                           />
                         </button>

@@ -460,20 +460,24 @@ export function BookingCTA() {
                       </div>
 
                       <div className="mt-3 flex justify-center">
-                        <button
-                          type="button"
-                          onClick={resetForm}
-                          className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-serif text-[12px] text-[#7d6e60] transition-colors hover:bg-[#f4ebde]"
-                          style={{
-                            border: '1px solid #d9ccbc',
-                            background: '#fbf6ef',
-                            boxShadow: '0 1px 2px rgba(101, 73, 48, 0.05)',
-                          }}
-                          aria-label="Chiudi form"
-                        >
-                          <X className="w-3.5 h-3.5" aria-hidden="true" />
-                          <span>Chiudi Form</span>
-                        </button>
+                       <button
+  type="button"
+  onClick={sendEmail}
+  disabled={!canSend || !!dateError}
+  className={`group flex h-[48px] w-full items-center justify-center gap-2 font-serif text-[15px] uppercase tracking-[0.06em] transition-all duration-300 ${
+    !canSend || !!dateError
+      ? 'cursor-not-allowed bg-[#e4d6c7] text-[#a39587]' // Stato disabilitato: grigio/beige neutro e spento
+      : 'bg-[#b0663b] text-white shadow-md hover:bg-[#9b542f] hover:shadow-lg hover:-translate-y-0.5' // Stato attivo: terracotta intenso del sito con effetto hover
+  }`}
+  aria-label="Invia richiesta"
+>
+  <Mail className="w-4 h-4" aria-hidden="true" />
+  <span>{sending ? 'Invio...' : 'Invia Richiesta'}</span>
+  <ArrowRight
+    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-[4px]"
+    aria-hidden="true"
+  />
+</button>
                       </div>
                     </>
                   )}

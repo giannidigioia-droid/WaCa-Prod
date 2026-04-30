@@ -1,5 +1,3 @@
-
-```tsx
 import React, { useMemo, useState } from 'react'
 import emailjs from '@emailjs/browser'
 import {
@@ -506,4 +504,3 @@ export function BookingCTA() {
     </section>
   )
 }
-```

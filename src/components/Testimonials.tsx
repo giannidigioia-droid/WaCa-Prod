@@ -1,3 +1,6 @@
+Ecco il codice completo aggiornato con **Francesca** e **Nerina** a 4 stelle e la quinta stella in grigio chiaro quando il rating è inferiore a 5.
+
+```tsx
 import React from 'react';
 import { Quote, ExternalLink } from 'lucide-react';
 
@@ -42,8 +45,8 @@ export function Testimonials() {
       yearsOnPlatform: '2 anni su Airbnb',
       text:
         'Abbiamo alloggiato per una settimana in questa struttura e non c’era mai capitato di trovare una cosa così accurata e confortevole. La location ci ha consentito il puro relax continuo. Abbiamo anche avuto la possibilità di conoscere i proprietari, una famiglia davvero molto gentile.',
-      author: 'Francesco',
-      rating: 5,
+      author: 'Francesca',
+      rating: 4,
     },
     {
       source: 'Airbnb',
@@ -133,7 +136,7 @@ export function Testimonials() {
       text:
         'Cura dei dettagli, sia interno casa che esterno. Gentilezza e professionalità dei proprietari. L’atmosfera è rilassata e autentica.',
       author: 'Nerina',
-      rating: 5,
+      rating: 4,
     },
   ];
 
@@ -146,7 +149,10 @@ export function Testimonials() {
 
   const stars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
-      <span key={i} className="text-[var(--sienna)] text-xs">
+      <span
+        key={i}
+        className={i < rating ? 'text-[var(--sienna)] text-xs' : 'text-gray-300 text-xs'}
+      >
         ★
       </span>
     ));
@@ -268,10 +274,11 @@ export function Testimonials() {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
         }
-        .animate-\\[scrollRightToLeft_120s_linear_infinite\\] {
+        .animate-\\\\[scrollRightToLeft_120s_linear_infinite\\\\] {
           animation: scrollRightToLeft 120s linear infinite;
         }
       `}</style>
     </section>
   );
 }
+```

@@ -159,7 +159,7 @@ export function Testimonials() {
     return [...Array(5)].map((_, i) => (
       <span
         key={i}
-        className={i < rating ? 'text-[var(--sienna)] text-xs' : 'text-gray-300 text-xs'}
+        className={i < rating ? 'text-[var(--sienna)] text-sm md:text-base' : 'text-gray-300 text-sm md:text-base'}
       >
         ★
       </span>
@@ -332,12 +332,7 @@ export function Testimonials() {
                   </div>
 
                   <div className="mt-3 space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-[var(--sienna)] leading-none">
-                        {review.rating.toFixed(1)}
-                      </span>
-                      <div className="flex gap-0.5">{stars(review.rating)}</div>
-                    </div>
+                    <div className="flex gap-0.5 mt-1">{stars(review.rating)}</div>
                     <p className="text-[11px] text-[var(--brown)] opacity-80 uppercase tracking-widest">
                       Periodo: {review.period}
                     </p>

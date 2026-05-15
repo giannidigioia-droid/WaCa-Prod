@@ -1,5 +1,4 @@
-import os
-code = '''import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Quote, ExternalLink, Pause, Play } from 'lucide-react';
 
 type Review = {
@@ -16,6 +15,7 @@ type Review = {
 export function Testimonials() {
   const bookingReviewsUrl =
     'https://www.booking.com/hotel/it/masseria-della-pace-nadir-amp-zenit-apartments.it.html?aid=2311236&label=it-it-booking-desktop-VRZD0IC5lt9Ulq%2AajTZ_bgS652829000338%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-65526620%3Alp1008463%3Ali%3Adec%3Adm&sid=8059266fdbb662c4b4890577f7bb1c20&all_sr_blocks=1254666602_397981772_2_0_0&checkin=2025-08-01&checkout=2025-08-17&dest_id=-122100&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=1254666602_397981772_2_0_0&hpos=1&matching_block_id=1254666602_397981772_2_0_0&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=1254666602_397981772_2_0_0__799689&srepoch=1742209379&srpvid=2a544dac788700dd&type=total&ucfs=1#tab-reviews';
+
   const airbnbReviewsUrl = 'https://www.airbnb.it/rooms/1604403343972959495';
   const googleReviewsUrl = 'https://www.google.com/search?q=WaCa%20-%20Apulian%20Villa%20Reviews';
 
@@ -253,9 +253,13 @@ export function Testimonials() {
 
                 <Quote className="w-10 h-10 text-[var(--sage)] opacity-35 mb-4" />
 
-                <p className="font-serif text-lg text-[var(--brown)] italic leading-relaxed">“{review.text}”</p>
+                <p className="font-serif text-lg text-[var(--brown)] italic leading-relaxed">
+                  “{review.text}”
+                </p>
 
-                <div className="border-t border-[var(--sage)] border-opacity-30 pt-4 mt-6">{renderStars(review.rating, review.source)}</div>
+                <div className="border-t border-[var(--sage)] border-opacity-30 pt-4 mt-6">
+                  {renderStars(review.rating, review.source)}
+                </div>
 
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--sage)] opacity-25" />
                 <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--sage)] opacity-25" />
@@ -279,11 +283,38 @@ export function Testimonials() {
         </div>
       </div>
 
-      <style>{`\n        .reviews-track {\n          display: flex;\n          gap: 2rem;\n          width: max-content;\n          animation: marquee 50s linear infinite;\n          will-change: transform;\n        }\n        .reviews-track.paused {\n          animation-play-state: paused;\n        }\n        .review-card {\n          width: 380px;\n          min-height: 420px;\n          flex: 0 0 auto;\n        }\n        @keyframes marquee {\n          from { transform: translateX(0); }\n          to { transform: translateX(-50%); }\n        }\n        @media (max-width: 768px) {\n          .review-card {\n            width: 300px;\n            min-height: 470px;\n            padding: 1.5rem;\n          }\n          .reviews-track {\n            animation-duration: 65s;\n            gap: 1.25rem;\n          }\n        }\n      `}</style>
+      <style>{`
+        .reviews-track {
+          display: flex;
+          gap: 2rem;
+          width: max-content;
+          animation: marquee 50s linear infinite;
+          will-change: transform;
+        }
+        .reviews-track.paused {
+          animation-play-state: paused;
+        }
+        .review-card {
+          width: 380px;
+          min-height: 420px;
+          flex: 0 0 auto;
+        }
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        @media (max-width: 768px) {
+          .review-card {
+            width: 300px;
+            min-height: 470px;
+            padding: 1.5rem;
+          }
+          .reviews-track {
+            animation-duration: 65s;
+            gap: 1.25rem;
+          }
+        }
+      `}</style>
     </section>
   );
 }
-'''
-open('output/Testimonials.tsx', 'w', encoding='utf-8').write(code)
-print(code)
-print('\nFILE: output/Testimonials.tsx')

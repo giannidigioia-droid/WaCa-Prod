@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Quote, ExternalLink } from 'lucide-react';
 
 type Review = {
@@ -138,6 +138,17 @@ export function Testimonials() {
   ];
 
   const duplicatedReviews = [...reviews, ...reviews];
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [paused, setPaused] = useState(false);
+
+  const dragRef = useRef({
+    isDown: false,
+    startX: 0,
+    startTranslate: 0,
+    translate: 0,
+    width: 0,
+  });
 
   const sourceLabel = (source: Review['source']) => {
     if (source === 'Airbnb') return 'Airbnb';
@@ -153,6 +164,76 @@ export function Testimonials() {
         ★
       </span>
     ));
+  };
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    const setWidth = () => {
+      dragRef.current.width = el.scrollWidth / 2;
+    };
+
+    setWidth();
+    window.addEventListener('resize', setWidth);
+
+    let raf = 0;
+    let last = performance.now();
+    const speed = 0.03;
+
+    const tick = (now: number) => {
+      const dt = now - last;
+      last = now;
+
+      if (!paused && !dragRef.current.isDown) {
+        const w = dragRef.current.width;
+        if (w > 0) {
+          dragRef.current.translate -= dt * speed;
+          if (dragRef.current.translate <= -w) dragRef.current.translate += w;
+          if (dragRef.current.translate > 0) dragRef.current.translate -= w;
+          el.style.transform = `translateX(${dragRef.current.translate}px)`;
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', setWidth);
+    };
+  }, [paused]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.isDown = true;
+    dragRef.current.startX = e.clientX;
+    dragRef.current.startTranslate = dragRef.current.translate;
+    setIsDragging(true);
+    setPaused(true);
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.isDown || !trackRef.current) return;
+    const dx = e.clientX - dragRef.current.startX;
+    dragRef.current.translate = dragRef.current.startTranslate + dx;
+    const w = dragRef.current.width;
+    if (w > 0) {
+      while (dragRef.current.translate <= -w) dragRef.current.translate += w;
+      while (dragRef.current.translate > 0) dragRef.current.translate -= w;
+    }
+    trackRef.current.style.transform = `translateX(${dragRef.current.translate}px)`;
+  };
+
+  const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.isDown = false;
+    setIsDragging(false);
+    setPaused(false);
+    if (e && (e.currentTarget as HTMLDivElement).hasPointerCapture(e.pointerId)) {
+      (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
@@ -210,7 +291,16 @@ export function Testimonials() {
         </div>
 
         <div className="relative overflow-hidden">
-          <div className="flex gap-8 w-max animate-[scrollRightToLeft_120s_linear_infinite]">
+          <div
+            ref={trackRef}
+            className={`flex gap-8 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerLeave={endDrag}
+            onPointerCancel={endDrag}
+            style={{ willChange: 'transform', touchAction: 'none' }}
+          >
             {duplicatedReviews.map((review, idx) => (
               <div
                 key={`${review.author}-${idx}`}
@@ -265,16 +355,6 @@ export function Testimonials() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        @keyframes scrollRightToLeft {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .animate-\\\\[scrollRightToLeft_120s_linear_infinite\\\\] {
-          animation: scrollRightToLeft 120s linear infinite;
-        }
-      `}</style>
     </section>
   );
 }

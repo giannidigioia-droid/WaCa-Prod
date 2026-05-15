@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Quote, ExternalLink } from 'lucide-react';
 
 type Review = {
@@ -138,13 +138,14 @@ export function Testimonials() {
   ];
 
   const duplicatedReviews = [...reviews, ...reviews];
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
   const dragState = useRef({
     isDown: false,
     startX: 0,
-    scrollLeft: 0,
+    startScrollLeft: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
+  const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
 
   const sourceLabel = (source: Review['source']) => {
     if (source === 'Airbnb') return 'Airbnb';
@@ -162,26 +163,55 @@ export function Testimonials() {
     ));
   };
 
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    let raf = 0;
+    let last = performance.now();
+    const speed = 0.03;
+
+    const loop = (now: number) => {
+      const dt = now - last;
+      last = now;
+
+      if (!isAutoScrollPaused && !dragState.current.isDown) {
+        const half = el.scrollWidth / 2;
+        if (half > 0) {
+          el.scrollLeft += dt * speed;
+          if (el.scrollLeft >= half) el.scrollLeft -= half;
+        }
+      }
+
+      raf = requestAnimationFrame(loop);
+    };
+
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [isAutoScrollPaused]);
+
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!scrollerRef.current) return;
+    if (!trackRef.current) return;
     dragState.current.isDown = true;
     dragState.current.startX = e.clientX;
-    dragState.current.scrollLeft = scrollerRef.current.scrollLeft;
+    dragState.current.startScrollLeft = trackRef.current.scrollLeft;
     setIsDragging(true);
-    scrollerRef.current.setPointerCapture(e.pointerId);
+    setIsAutoScrollPaused(true);
+    trackRef.current.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragState.current.isDown || !scrollerRef.current) return;
+    if (!dragState.current.isDown || !trackRef.current) return;
     const dx = e.clientX - dragState.current.startX;
-    scrollerRef.current.scrollLeft = dragState.current.scrollLeft - dx;
+    trackRef.current.scrollLeft = dragState.current.startScrollLeft - dx;
   };
 
   const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
     dragState.current.isDown = false;
     setIsDragging(false);
-    if (e && scrollerRef.current && scrollerRef.current.hasPointerCapture(e.pointerId)) {
-      scrollerRef.current.releasePointerCapture(e.pointerId);
+    setIsAutoScrollPaused(false);
+    if (e && trackRef.current && trackRef.current.hasPointerCapture(e.pointerId)) {
+      trackRef.current.releasePointerCapture(e.pointerId);
     }
   };
 
@@ -241,14 +271,14 @@ export function Testimonials() {
 
         <div className="relative overflow-hidden">
           <div
-            ref={scrollerRef}
-            className={`flex gap-8 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
-            style={{ animation: isDragging ? 'none' : 'scrollRightToLeft 120s linear infinite' }}
+            ref={trackRef}
+            className={`flex gap-8 w-max cursor-grab select-none touch-pan-y ${isDragging ? 'cursor-grabbing' : ''}`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerLeave={endDrag}
             onPointerCancel={endDrag}
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {duplicatedReviews.map((review, idx) => (
               <div
@@ -306,9 +336,11 @@ export function Testimonials() {
       </div>
 
       <style>{`
-        @keyframes scrollRightToLeft {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+        .touch-pan-y {
+          touch-action: pan-y;
+        }
+        div[style*='scrollbar-width: none']::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </section>

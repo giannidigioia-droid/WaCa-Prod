@@ -216,7 +216,6 @@ export function Testimonials() {
   const renderStars = (rating: number, source: Review['source']) => {
     const filled = source === 'Booking' ? Math.round(rating / 2) : rating;
     const label = source === 'Booking' ? `${rating}/10` : `${rating}/5`;
-
     return (
       <div className=\"reviews-stars\">
         <div className=\"reviews-stars-row\">

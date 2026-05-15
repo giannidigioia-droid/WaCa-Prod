@@ -1,15 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { Quote, ExternalLink, Pause, Play } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { Quote, ExternalLink } from 'lucide-react';
 
 type Review = {
   source: 'Airbnb' | 'Booking' | 'Google';
+  name: string;
+  date: string;
   text: string;
-  author: string;
-  from: string;
+  location?: string;
+  stay?: string;
+  nights?: string;
+  country?: string;
+  yearsOnAirbnb?: string;
   rating: number;
-  avatar?: string;
-  photo?: string;
-  photoAlt?: string;
 };
 
 export function Testimonials() {
@@ -22,138 +24,235 @@ export function Testimonials() {
   const reviews: Review[] = useMemo(
     () => [
       {
-        source: 'Airbnb',
-        text:
-          'Un posto bellissimo in un uliveto, che permette di rilassarsi completamente lontano dalla folla e dal turismo di massa. È stato meraviglioso rilassarsi in campagna, accompagnati da cicale, il fruscio delle foglie e il profumo mediterraneo. C’è una buona connessione nei dintorni: ci sono sette minuti di macchina dal centro storico, 12 minuti da Polignano e 16 minuti da Monopoli.',
-        author: 'Piotr',
-        from: 'Airbnb • luglio 2025',
-        rating: 5,
-        avatar: 'P',
-        photo: '/reviews/piotr.jpg',
-        photoAlt: 'Piotr',
-      },
-      {
-        source: 'Airbnb',
-        text: 'Il soggiorno è stato fantastico: la piscina con il giardino è semplicemente fantastica.',
-        author: 'Fabio',
-        from: 'Airbnb • giugno 2025',
-        rating: 5,
-        avatar: 'F',
-        photo: '/reviews/fabio.jpg',
-        photoAlt: 'Fabio',
-      },
-      {
-        source: 'Airbnb',
-        text:
-          'Abbiamo alloggiato per una settimana in questa struttura e non c’era mai capitato di trovare una cosa così accurata e confortevole. La location ci ha consentito il puro relax continuo.',
-        author: 'Francesco',
-        from: 'Airbnb • agosto 2024',
-        rating: 5,
-        avatar: 'F',
-        photo: '/reviews/francesco.jpg',
-        photoAlt: 'Francesco',
-      },
-      {
-        source: 'Airbnb',
-        text: 'Ottimo alloggio in un ambiente tranquillo!',
-        author: 'Dong-Min',
-        from: 'Airbnb • 3 settimane fa',
-        rating: 5,
-        avatar: 'D',
-        photo: '/reviews/dongmin.jpg',
-        photoAlt: 'Dong-Min',
-      },
-      {
-        source: 'Airbnb',
-        text:
-          'Abbiamo trascorso un ottimo soggiorno nella casa. L’host è stato estremamente accogliente, molto attento e sempre disponibile.',
-        author: 'Dilan',
-        from: 'Airbnb • agosto 2025',
-        rating: 5,
-        avatar: 'D',
-        photo: '/reviews/dilan.jpg',
-        photoAlt: 'Dilan',
-      },
-      {
-        source: 'Airbnb',
-        text:
-          'Casa così come nelle foto, fornita di tutti i servizi elencati, posizione strategica per raggiungere varie località della Puglia, giardino e piscina in ottime condizioni.',
-        author: 'Pasquale',
-        from: 'Airbnb • agosto 2025',
-        rating: 5,
-        avatar: 'P',
-        photo: '/reviews/pasquale.jpg',
-        photoAlt: 'Pasquale',
-      },
-      {
-        source: 'Airbnb',
-        text:
-          'Ottimo alloggio come base per visitare la Puglia, la nostra famiglia ha apprezzato la piscina e l’uliveto.',
-        author: 'Riina',
-        from: 'Airbnb • giugno 2025',
-        rating: 5,
-        avatar: 'R',
-        photo: '/reviews/riina.jpg',
-        photoAlt: 'Riina',
-      },
-      {
-        source: 'Airbnb',
-        text:
-          'Tutto è stato fantastico, ci siamo trovati benissimo. La posizione è proprio come nelle foto, molto pulita e spaziosa.',
-        author: 'Lidia',
-        from: 'Airbnb • giugno 2025',
-        rating: 5,
-        avatar: 'L',
-      },
-      {
         source: 'Booking',
+        name: 'Christelle',
+        date: '15 settembre 2025',
         text:
-          'We had an amazing stay at this beautiful apartment set in the midst of olive groves. The location is incredibly peaceful and quiet, perfect for relaxation.',
-        author: 'Maja',
-        from: 'Booking • settembre 2024',
+          'Nous avons passé un super moment. Nous reviendrons certainement dans ce logement la prochaine fois ! Les propriétaires s sont adorables.',
+        stay: 'Coppia',
+        nights: '9 notti',
+        country: 'Belgio',
         rating: 10,
-        avatar: 'M',
-        photo: '/reviews/maja.jpg',
-        photoAlt: 'Maja',
-      },
-      {
-        source: 'Booking',
-        text:
-          'Nous avons passé un super moment. Nous reviendrons certainement dans ce logement la prochaine fois ! La tranquillité, la propreté, la situation.',
-        author: 'Christelle',
-        from: 'Booking • settembre 2025',
-        rating: 10,
-        avatar: 'C',
-        photo: '/reviews/christelle.jpg',
-        photoAlt: 'Christelle',
       },
       {
         source: 'Google',
-        text:
-          'La pace dei sensi. L’estrema pace la connessione con la natura. La cordialità eccessiva dei proprietari.',
-        author: 'Colamonico',
-        from: 'Google • giugno 2025',
+        name: 'Colamonico',
+        date: 'giugno 2025',
+        text: 'La pace dei sensi. L’estrema pace la connessione con la natura. La cordialità eccessiva dei proprietari.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
         rating: 5,
-        avatar: 'C',
-        photo: '/reviews/colamonico.jpg',
-        photoAlt: 'Colamonico',
       },
       {
         source: 'Google',
+        name: 'Nerina',
+        date: 'settembre 2024',
         text:
           'Oasi di pace e relax totale. Cura dei dettagli, sia interno casa che esterno. Gentilezza e professionalità dei proprietari.',
-        author: 'Nerina',
-        from: 'Google • settembre 2024',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
         rating: 5,
-        avatar: 'N',
-        photo: '/reviews/nerina.jpg',
-        photoAlt: 'Nerina',
+      },
+      {
+        source: 'Airbnb',
+        name: 'Piotr',
+        date: 'luglio 2025',
+        text:
+          'Un posto bellissimo in un uliveto, che permette di rilassarsi completamente lontano dalla folla e dal turismo di massa. È stato meraviglioso rilassarsi in campagna, accompagnati da cicale, il fruscio delle foglie e il profumo mediterraneo.',
+        stay: 'Famiglia',
+        nights: undefined,
+        country: 'Polonia',
+        yearsOnAirbnb: '3 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Fabio',
+        date: 'giugno 2025',
+        text:
+          'Il soggiorno è stato fantastico! La piscina con il giardino è semplicemente fantastica.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
+        yearsOnAirbnb: '9 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Francesco',
+        date: 'agosto 2024',
+        text:
+          'Abbiamo alloggiato per una settimana in questa struttura e non c’era mai capitato di trovare una cosa così accurata e confortevole. La location ci ha consentito il puro relax continuo.',
+        stay: 'Famiglia',
+        nights: '7 notti',
+        country: 'Italia',
+        yearsOnAirbnb: '2 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Dong-Min',
+        date: '3 settimane fa',
+        text: 'Ottimo alloggio in un ambiente tranquillo!',
+        stay: undefined,
+        nights: undefined,
+        country: 'Corea del Sud',
+        yearsOnAirbnb: '4 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Dilan',
+        date: 'agosto 2025',
+        text:
+          'Abbiamo trascorso un ottimo soggiorno nella casa! L’host è stato estremamente accogliente, molto attento e sempre disponibile.',
+        stay: 'Famiglia',
+        nights: undefined,
+        country: 'Turchia',
+        yearsOnAirbnb: '5 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Pasquale',
+        date: 'agosto 2025',
+        text:
+          'Casa così come nelle foto, fornita di tutti i servizi elencati, posizione strategica per poter raggiungere varie località della Puglia, giardino e piscina in ottime condizioni.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
+        yearsOnAirbnb: '4 mesi su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Riina',
+        date: 'giugno 2025',
+        text:
+          'Ottimo alloggio come base per visitare la Puglia, la nostra famiglia ha apprezzato la piscina e l’uliveto.',
+        stay: 'Famiglia',
+        nights: undefined,
+        country: 'Finlandia',
+        yearsOnAirbnb: '10 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Lidia',
+        date: 'giugno 2025',
+        text:
+          'Tutto è stato fantastico, ci siamo trovati benissimo. La posizione è proprio come nelle foto, molto pulita e spaziosa.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Romania',
+        yearsOnAirbnb: '8 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Booking',
+        name: 'Maja',
+        date: '28 settembre 2024',
+        text:
+          'We had an amazing stay at this beautiful apartment set in the midst of olive groves. The location is incredibly peaceful and quiet, perfect for relaxation.',
+        stay: 'Famiglia',
+        nights: '5 notti',
+        country: 'Slovenia',
+        rating: 10,
+      },
+      {
+        source: 'Booking',
+        name: 'Rita',
+        date: '3 ottobre 2025',
+        text: 'Eccezionale. L’ospite non ha lasciato un commento.',
+        stay: undefined,
+        nights: '7 notti',
+        country: 'Germania',
+        rating: 10,
+      },
+      {
+        source: 'Booking',
+        name: 'Frida',
+        date: 'luglio 2025',
+        text:
+          'Lovely family friendly place with great pool and welcoming hosts surrounded by old olive groves.',
+        stay: 'Famiglia',
+        nights: '7 notti',
+        country: 'Finlandia',
+        rating: 10,
+      },
+      {
+        source: 'Booking',
+        name: 'Christina',
+        date: 'maggio 2025',
+        text: 'Wunderschöne Ruheoase im Grünen',
+        stay: 'Coppia',
+        nights: '5 notti',
+        country: 'Germania',
+        rating: 9,
+      },
+      {
+        source: 'Booking',
+        name: 'Nerina',
+        date: 'settembre 2024',
+        text:
+          'Cura dei dettagli, sia interno casa che esterno. Gentilezza e professionalità dei proprietari.',
+        stay: 'Viaggiatore singolo',
+        nights: '3 notti',
+        country: 'Italia',
+        rating: 9,
+      },
+      {
+        source: 'Google',
+        name: 'Maura',
+        date: 'settembre 2024',
+        text:
+          'Siamo tornati da poco da questo posto meraviglioso. La casa è immersa in un uliveto secolare, fatta di calma e silenzio. Da tornare assolutamente.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Stephanie',
+        date: 'luglio 2025',
+        text:
+          'Un appartamento semplice ma molto speciale nel bel giardino. La piscina e le aree esterne sono molto speciali ed è stato un vero piacere trascorrere del tempo qui.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Germania',
+        yearsOnAirbnb: '13 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Eugenia',
+        date: 'giugno 2025',
+        text:
+          'La proprietà si trova in una posizione idilliaca in mezzo a un uliveto e offre molta tranquillità e privacy. Le camere sono pulite, moderne e ben attrezzate.',
+        stay: undefined,
+        nights: undefined,
+        country: 'Italia',
+        yearsOnAirbnb: '11 anni su Airbnb',
+        rating: 5,
+      },
+      {
+        source: 'Airbnb',
+        name: 'Tidiane',
+        date: 'agosto 2024',
+        text:
+          'Nous avons passé un séjour très agréable, reposant et ressourçant. L’appartement se situe dans un cadre magnifique au milieu d’une des plus belles oliveraies de la région.',
+        stay: 'Amici',
+        nights: undefined,
+        country: 'Francia',
+        yearsOnAirbnb: '2 anni su Airbnb',
+        rating: 5,
       },
     ],
     []
   );
-
-  const [paused, setPaused] = useState(false);
 
   const renderStars = (rating: number, source: Review['source']) => {
     const filled = source === 'Booking' ? Math.round(rating / 2) : rating;
@@ -179,39 +278,18 @@ export function Testimonials() {
           <p className="font-script text-2xl text-[var(--sienna)]">Words from our Guests</p>
 
           <div className="mt-8 flex flex-col md:flex-row justify-center gap-4">
-            <a
-              href={bookingReviewsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <span className="font-serif text-sm md:text-base text-[var(--brown)]">
-                Recensioni su <strong>Booking.com</strong>
-              </span>
+            <a href={bookingReviewsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow">
+              <span className="font-serif text-sm md:text-base text-[var(--brown)]">Recensioni su <strong>Booking.com</strong></span>
               <ExternalLink className="w-4 h-4 text-[var(--sienna)]" />
             </a>
 
-            <a
-              href={airbnbReviewsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <span className="font-serif text-sm md:text-base text-[var(--brown)]">
-                Recensioni su <strong>Airbnb</strong>
-              </span>
+            <a href={airbnbReviewsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow">
+              <span className="font-serif text-sm md:text-base text-[var(--brown)]">Recensioni su <strong>Airbnb</strong></span>
               <ExternalLink className="w-4 h-4 text-[var(--sienna)]" />
             </a>
 
-            <a
-              href={googleReviewsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <span className="font-serif text-sm md:text-base text-[var(--brown)]">
-                Recensioni su <strong>Google</strong>
-              </span>
+            <a href={googleReviewsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-6 py-3 shadow-sm hover:shadow-md transition-shadow">
+              <span className="font-serif text-sm md:text-base text-[var(--brown)]">Recensioni su <strong>Google</strong></span>
               <ExternalLink className="w-4 h-4 text-[var(--sienna)]" />
             </a>
           </div>
@@ -222,99 +300,190 @@ export function Testimonials() {
         </div>
 
         <div className="overflow-hidden">
-          <div className={`reviews-track ${paused ? 'paused' : ''}`}>
+          <div className="reviews-track">
             {[...reviews, ...reviews].map((review, idx) => (
-              <article
-                key={`${review.author}-${idx}`}
-                className="review-card bg-[var(--paper)] p-8 shadow-sm border border-[var(--cream)] relative group hover:-translate-y-2 transition-transform duration-300"
-              >
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-full overflow-hidden bg-[var(--sage)]/20 flex items-center justify-center shrink-0">
-                    {review.photo ? (
-                      <img
-                        src={review.photo}
-                        alt={review.photoAlt || review.author}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="font-serif text-xl text-[var(--brown)]">{review.avatar ?? review.author[0]}</span>
-                    )}
-                  </div>
+              <article key={`${review.source}-${review.name}-${idx}`} className="review-card bg-[var(--paper)] shadow-sm border border-[var(--cream)] relative group hover:-translate-y-2 transition-transform duration-300">
+                <div className="review-top">
+                  <div className="review-head">
+                    <div className="review-meta-left">
+                      <p className="review-name">{review.name}</p>
+                      <p className="review-platform">{review.source} • {review.date}</p>
+                      <p className="review-badge">{review.source.toUpperCase()}</p>
+                    </div>
 
-                  <div>
-                    <p className="font-bold text-[var(--brown)] text-lg leading-tight">{review.author}</p>
-                    <p className="text-sm text-[var(--brown)] opacity-60">{review.from}</p>
-                    <p className="mt-1 inline-flex items-center rounded-full border border-[var(--cream)] px-3 py-1 text-xs uppercase tracking-widest text-[var(--sienna)]">
-                      {review.source}
-                    </p>
+                    <div className="review-meta-right">
+                      {review.stay && <p>{review.stay}</p>}
+                      {review.nights && <p>{review.nights}</p>}
+                      {review.country && <p>{review.country}</p>}
+                      {review.yearsOnAirbnb && review.source === 'Airbnb' && <p>{review.yearsOnAirbnb}</p>}
+                    </div>
                   </div>
                 </div>
 
-                <Quote className="w-10 h-10 text-[var(--sage)] opacity-35 mb-4" />
+                <Quote className="quote-icon" />
 
-                <p className="font-serif text-lg text-[var(--brown)] italic leading-relaxed">
-                  “{review.text}”
-                </p>
+                <p className="review-text">“{review.text}”</p>
 
-                <div className="border-t border-[var(--sage)] border-opacity-30 pt-4 mt-6">
-                  {renderStars(review.rating, review.source)}
-                </div>
+                <div className="review-divider" />
+                {renderStars(review.rating, review.source)}
 
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--sage)] opacity-25" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--sage)] opacity-25" />
+                <div className="corner top-right" />
+                <div className="corner bottom-left" />
               </article>
             ))}
           </div>
         </div>
-
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            className="inline-flex items-center gap-2 bg-[var(--paper)] border border-[var(--cream)] px-4 py-2 text-[var(--brown)] shadow-sm"
-          >
-            {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-            {paused ? 'Riprendi' : 'Pausa'}
-          </button>
-          <span className="text-xs uppercase tracking-widest text-[var(--brown)] opacity-60">
-            Scorrimento da destra verso sinistra
-          </span>
-        </div>
       </div>
 
-      <style>{`
+      <style>{\`
         .reviews-track {
           display: flex;
           gap: 2rem;
           width: max-content;
-          animation: marquee 50s linear infinite;
+          animation: marquee 55s linear infinite;
           will-change: transform;
         }
-        .reviews-track.paused {
+
+        .reviews-track:hover {
           animation-play-state: paused;
         }
+
         .review-card {
           width: 380px;
           min-height: 420px;
           flex: 0 0 auto;
+          padding: 1.6rem 1.6rem 1.4rem;
         }
+
+        .review-top {
+          min-height: 98px;
+        }
+
+        .review-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .review-meta-left {
+          min-width: 0;
+        }
+
+        .review-name {
+          font-family: Georgia, serif;
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: var(--brown);
+          line-height: 1.1;
+          margin: 0 0 4px 0;
+        }
+
+        .review-platform {
+          font-family: Georgia, serif;
+          font-size: 0.92rem;
+          color: var(--brown);
+          opacity: 0.65;
+          margin: 0 0 10px 0;
+        }
+
+        .review-badge {
+          display: inline-block;
+          border: 1px solid var(--cream);
+          border-radius: 999px;
+          padding: 4px 10px;
+          font-size: 0.68rem;
+          letter-spacing: 0.12em;
+          color: var(--sienna);
+          margin: 0;
+        }
+
+        .review-meta-right {
+          text-align: right;
+          font-family: Georgia, serif;
+          font-size: 0.82rem;
+          color: var(--brown);
+          opacity: 0.72;
+          line-height: 1.35;
+          min-width: 92px;
+        }
+
+        .review-meta-right p {
+          margin: 0;
+        }
+
+        .quote-icon {
+          width: 2.5rem;
+          height: 2.5rem;
+          color: var(--sage);
+          opacity: 0.35;
+          margin: 0.8rem 0 1rem 0;
+        }
+
+        .review-text {
+          font-family: Georgia, serif;
+          font-size: 1.02rem;
+          color: var(--brown);
+          font-style: italic;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .review-divider {
+          border-top: 1px solid rgba(0,0,0,0.13);
+          margin-top: 1.35rem;
+          padding-top: 1rem;
+        }
+
+        .corner {
+          position: absolute;
+          width: 2rem;
+          height: 2rem;
+          border-color: var(--sage);
+          opacity: 0.25;
+        }
+
+        .corner.top-right {
+          top: 0;
+          right: 0;
+          border-top: 2px solid;
+          border-right: 2px solid;
+        }
+
+        .corner.bottom-left {
+          bottom: 0;
+          left: 0;
+          border-bottom: 2px solid;
+          border-left: 2px solid;
+        }
+
         @keyframes marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
         }
+
         @media (max-width: 768px) {
-          .review-card {
-            width: 300px;
-            min-height: 470px;
-            padding: 1.5rem;
-          }
           .reviews-track {
-            animation-duration: 65s;
             gap: 1.25rem;
+            animation-duration: 70s;
+          }
+
+          .review-card {
+            width: 310px;
+            min-height: 430px;
+            padding: 1.35rem 1.2rem 1.1rem;
+          }
+
+          .review-meta-right {
+            min-width: 78px;
+            font-size: 0.75rem;
+          }
+
+          .review-text {
+            font-size: 0.98rem;
           }
         }
-      `}</style>
+      \`}</style>
     </section>
   );
 }

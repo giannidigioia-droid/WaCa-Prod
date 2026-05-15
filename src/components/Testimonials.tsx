@@ -264,7 +264,7 @@ export function Testimonials() {
         <div className=\"reviews-marquee\">
           <div className=\"reviews-track\">
             {[...reviews, ...reviews].map((review, idx) => (
-              <article key={`${review.source}-${review.name}-${idx}`} className=\"review-card\">
+              <article key={review.source + '-' + review.name + '-' + idx} className=\"review-card\">
                 <div className=\"review-card-top\">
                   <div>
                     <p className=\"review-name\">{review.name}</p>

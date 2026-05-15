@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Quote, ExternalLink } from 'lucide-react';
 
 type Review = {
@@ -138,6 +138,13 @@ export function Testimonials() {
   ];
 
   const duplicatedReviews = [...reviews, ...reviews];
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const dragState = useRef({
+    isDown: false,
+    startX: 0,
+    scrollLeft: 0,
+  });
+  const [isDragging, setIsDragging] = useState(false);
 
   const sourceLabel = (source: Review['source']) => {
     if (source === 'Airbnb') return 'Airbnb';
@@ -153,6 +160,29 @@ export function Testimonials() {
         ★
       </span>
     ));
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!scrollerRef.current) return;
+    dragState.current.isDown = true;
+    dragState.current.startX = e.clientX;
+    dragState.current.scrollLeft = scrollerRef.current.scrollLeft;
+    setIsDragging(true);
+    scrollerRef.current.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragState.current.isDown || !scrollerRef.current) return;
+    const dx = e.clientX - dragState.current.startX;
+    scrollerRef.current.scrollLeft = dragState.current.scrollLeft - dx;
+  };
+
+  const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
+    dragState.current.isDown = false;
+    setIsDragging(false);
+    if (e && scrollerRef.current && scrollerRef.current.hasPointerCapture(e.pointerId)) {
+      scrollerRef.current.releasePointerCapture(e.pointerId);
+    }
   };
 
   return (
@@ -209,8 +239,17 @@ export function Testimonials() {
           </p>
         </div>
 
-        <div className="relative overflow-hidden">
-          <div className="flex gap-8 w-max animate-[scrollRightToLeft_120s_linear_infinite]">
+        <div
+          ref={scrollerRef}
+          className={`relative overflow-x-auto overflow-y-hidden cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+          onPointerCancel={endDrag}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-y' }}
+        >
+          <div className="flex gap-8 w-max py-1">
             {duplicatedReviews.map((review, idx) => (
               <div
                 key={`${review.author}-${idx}`}
@@ -271,10 +310,14 @@ export function Testimonials() {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
         }
-        .animate-\\\\[scrollRightToLeft_120s_linear_infinite\\\\] {
+        .animate-\\[scrollRightToLeft_120s_linear_infinite\\] {
           animation: scrollRightToLeft 120s linear infinite;
+        }
+        div[style*='scrollbar-width: none']::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </section>
   );
 }
+

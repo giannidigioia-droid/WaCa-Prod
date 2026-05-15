@@ -1,4 +1,3 @@
-```tsx
 import React from 'react';
 import { Quote, ExternalLink } from 'lucide-react';
 
@@ -279,4 +278,3 @@ export function Testimonials() {
     </section>
   );
 }
-```

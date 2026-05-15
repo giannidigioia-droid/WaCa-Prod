@@ -1,5 +1,3 @@
-Ecco il codice completo aggiornato con **Francesca** e **Nerina** a 4 stelle e la quinta stella in grigio chiaro quando il rating è inferiore a 5.
-
 ```tsx
 import React from 'react';
 import { Quote, ExternalLink } from 'lucide-react';

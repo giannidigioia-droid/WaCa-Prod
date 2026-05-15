@@ -139,13 +139,16 @@ export function Testimonials() {
 
   const duplicatedReviews = [...reviews, ...reviews];
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const dragState = useRef({
+  const [isDragging, setIsDragging] = useState(false);
+  const [paused, setPaused] = useState(false);
+
+  const dragRef = useRef({
     isDown: false,
     startX: 0,
-    startScrollLeft: 0,
+    startTranslate: 0,
+    translate: 0,
+    width: 0,
   });
-  const [isDragging, setIsDragging] = useState(false);
-  const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
 
   const sourceLabel = (source: Review['source']) => {
     if (source === 'Airbnb') return 'Airbnb';
@@ -167,51 +170,69 @@ export function Testimonials() {
     const el = trackRef.current;
     if (!el) return;
 
+    const setWidth = () => {
+      dragRef.current.width = el.scrollWidth / 2;
+    };
+
+    setWidth();
+    window.addEventListener('resize', setWidth);
+
     let raf = 0;
     let last = performance.now();
     const speed = 0.03;
 
-    const loop = (now: number) => {
+    const tick = (now: number) => {
       const dt = now - last;
       last = now;
 
-      if (!isAutoScrollPaused && !dragState.current.isDown) {
-        const half = el.scrollWidth / 2;
-        if (half > 0) {
-          el.scrollLeft += dt * speed;
-          if (el.scrollLeft >= half) el.scrollLeft -= half;
+      if (!paused && !dragRef.current.isDown) {
+        const w = dragRef.current.width;
+        if (w > 0) {
+          dragRef.current.translate -= dt * speed;
+          if (dragRef.current.translate <= -w) dragRef.current.translate += w;
+          if (dragRef.current.translate > 0) dragRef.current.translate -= w;
+          el.style.transform = `translateX(${dragRef.current.translate}px)`;
         }
       }
 
-      raf = requestAnimationFrame(loop);
+      raf = requestAnimationFrame(tick);
     };
 
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [isAutoScrollPaused]);
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', setWidth);
+    };
+  }, [paused]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!trackRef.current) return;
-    dragState.current.isDown = true;
-    dragState.current.startX = e.clientX;
-    dragState.current.startScrollLeft = trackRef.current.scrollLeft;
+    dragRef.current.isDown = true;
+    dragRef.current.startX = e.clientX;
+    dragRef.current.startTranslate = dragRef.current.translate;
     setIsDragging(true);
-    setIsAutoScrollPaused(true);
-    trackRef.current.setPointerCapture(e.pointerId);
+    setPaused(true);
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragState.current.isDown || !trackRef.current) return;
-    const dx = e.clientX - dragState.current.startX;
-    trackRef.current.scrollLeft = dragState.current.startScrollLeft - dx;
+    if (!dragRef.current.isDown || !trackRef.current) return;
+    const dx = e.clientX - dragRef.current.startX;
+    dragRef.current.translate = dragRef.current.startTranslate + dx;
+    const w = dragRef.current.width;
+    if (w > 0) {
+      while (dragRef.current.translate <= -w) dragRef.current.translate += w;
+      while (dragRef.current.translate > 0) dragRef.current.translate -= w;
+    }
+    trackRef.current.style.transform = `translateX(${dragRef.current.translate}px)`;
   };
 
   const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
-    dragState.current.isDown = false;
+    dragRef.current.isDown = false;
     setIsDragging(false);
-    setIsAutoScrollPaused(false);
-    if (e && trackRef.current && trackRef.current.hasPointerCapture(e.pointerId)) {
-      trackRef.current.releasePointerCapture(e.pointerId);
+    setPaused(false);
+    if (e && (e.currentTarget as HTMLDivElement).hasPointerCapture(e.pointerId)) {
+      (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
     }
   };
 
@@ -272,13 +293,13 @@ export function Testimonials() {
         <div className="relative overflow-hidden">
           <div
             ref={trackRef}
-            className={`flex gap-8 w-max cursor-grab select-none touch-pan-y ${isDragging ? 'cursor-grabbing' : ''}`}
+            className={`flex gap-8 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerLeave={endDrag}
             onPointerCancel={endDrag}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            style={{ willChange: 'transform', touchAction: 'none' }}
           >
             {duplicatedReviews.map((review, idx) => (
               <div
@@ -334,15 +355,6 @@ export function Testimonials() {
           </div>
         </div>
       </div>
-
-      <style>{`
-        .touch-pan-y {
-          touch-action: pan-y;
-        }
-        div[style*='scrollbar-width: none']::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </section>
   );
 }

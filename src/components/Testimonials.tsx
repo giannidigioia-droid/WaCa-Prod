@@ -239,17 +239,17 @@ export function Testimonials() {
           </p>
         </div>
 
-        <div
-          ref={scrollerRef}
-          className={`relative overflow-x-auto overflow-y-hidden cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerLeave={endDrag}
-          onPointerCancel={endDrag}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-y' }}
-        >
-          <div className="flex gap-8 w-max py-1">
+        <div className="relative overflow-hidden">
+          <div
+            ref={scrollerRef}
+            className={`flex gap-8 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
+            style={{ animation: isDragging ? 'none' : 'scrollRightToLeft 120s linear infinite' }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerLeave={endDrag}
+            onPointerCancel={endDrag}
+          >
             {duplicatedReviews.map((review, idx) => (
               <div
                 key={`${review.author}-${idx}`}
@@ -310,14 +310,7 @@ export function Testimonials() {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
         }
-        .animate-\\[scrollRightToLeft_120s_linear_infinite\\] {
-          animation: scrollRightToLeft 120s linear infinite;
-        }
-        div[style*='scrollbar-width: none']::-webkit-scrollbar {
-          display: none;
-        }
       `}</style>
     </section>
   );
 }
-

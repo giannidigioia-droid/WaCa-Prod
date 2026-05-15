@@ -159,7 +159,7 @@ export function Testimonials() {
     return [...Array(5)].map((_, i) => (
       <span
         key={i}
-        className={i < rating ? 'text-[var(--sienna)] text-xs' : 'text-gray-300 text-xs'}
+        className={i < rating ? 'text-[var(--sienna)] text-sm md:text-base' : 'text-gray-300 text-sm md:text-base'}
       >
         ★
       </span>
@@ -293,7 +293,7 @@ export function Testimonials() {
         <div className="relative overflow-hidden">
           <div
             ref={trackRef}
-            className={`flex gap-8 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
+            className={`flex gap-6 w-max cursor-grab select-none ${isDragging ? 'cursor-grabbing' : ''}`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
@@ -304,47 +304,47 @@ export function Testimonials() {
             {duplicatedReviews.map((review, idx) => (
               <div
                 key={`${review.author}-${idx}`}
-                className="w-[360px] md:w-[380px] bg-[var(--paper)] p-8 shadow-sm border border-[var(--cream)] relative shrink-0"
+                className="w-[320px] md:w-[340px] bg-[var(--paper)] p-5 shadow-sm border border-[var(--cream)] relative shrink-0"
               >
-                <div className="flex items-center justify-between mb-5">
-                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-[var(--brown)] opacity-70">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--brown)] opacity-70">
                     <span className="w-2 h-2 rounded-full bg-[var(--sienna)]"></span>
                     {sourceLabel(review.source)}
                   </span>
-                  <span className="text-xs uppercase tracking-widest text-[var(--brown)] opacity-55">
+                  <span className="text-[10px] uppercase tracking-widest text-[var(--brown)] opacity-55">
                     {review.yearsOnPlatform || ''}
                   </span>
                 </div>
 
-                <div className="mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[var(--sage)] text-white flex items-center justify-center font-bold text-lg shrink-0">
+                <div className="mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[var(--sage)] text-white flex items-center justify-center font-bold text-base shrink-0">
                       {review.author[0]}
                     </div>
-                    <div>
-                      <p className="font-bold text-[var(--sienna)] font-script text-xl leading-none">
+                    <div className="min-w-0">
+                      <p className="font-bold text-[var(--sienna)] font-script text-lg leading-none">
                         {review.author}
                       </p>
-                      <p className="text-xs text-[var(--brown)] opacity-60 uppercase tracking-widest mt-1">
+                      <p className="text-[11px] text-[var(--brown)] opacity-60 uppercase tracking-widest mt-1 truncate">
                         {review.country}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-4 space-y-1">
-                    <p className="text-sm text-[var(--brown)] opacity-80 uppercase tracking-widest">
+                  <div className="mt-3 space-y-1">
+                    <div className="flex gap-0.5 mt-1">{stars(review.rating)}</div>
+                    <p className="text-[11px] text-[var(--brown)] opacity-80 uppercase tracking-widest">
                       Periodo: {review.period}
                     </p>
-                    <p className="text-sm text-[var(--brown)] opacity-80 uppercase tracking-widest">
+                    <p className="text-[11px] text-[var(--brown)] opacity-80 uppercase tracking-widest">
                       {review.nights} • {review.group}
                     </p>
-                    <div className="flex gap-1 mt-3">{stars(review.rating)}</div>
                   </div>
                 </div>
 
-                <Quote className="w-9 h-9 text-[var(--sage)] opacity-35 mb-4" />
+                <Quote className="w-8 h-8 text-[var(--sage)] opacity-35 mb-3" />
 
-                <p className="font-serif text-lg text-[var(--brown)] italic leading-relaxed">
+                <p className="font-serif text-[15px] text-[var(--brown)] italic leading-relaxed">
                   "{review.text}"
                 </p>
 
